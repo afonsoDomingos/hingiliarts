@@ -190,22 +190,35 @@ app.delete('/api/admin/projects/:id', protect, async (req, res) => {
 app.put('/api/admin/projects/:id', protect, upload.array('images', 5), async (req, res) => {
     try {
         const { title, category, description } = req.body;
-        const updateData = { title, category, description };
 
-        // Se houver novas imagens, adicionamos ao array existente
+        // Criamos o objeto de atualização apenas com o que foi enviado
+        let updateData = {};
+        if (title) updateData.title = title;
+        if (category) updateData.category = category;
+        if (description !== undefined) updateData.description = description;
+
+        // Se houver novas imagens, anexamos
         if (req.files && req.files.length > 0) {
             const newImages = req.files.map(file => file.path);
             const project = await Project.findById(req.params.id);
-            updateData.images = [...(project.images || []), ...newImages];
+            if (project) {
+                updateData.images = [...(project.images || []), ...newImages];
+            }
         }
 
         const updatedProject = await Project.findByIdAndUpdate(
             req.params.id,
             { $set: updateData },
-            { new: true }
+            { new: true, runValidators: true }
         );
+
+        if (!updatedProject) {
+            return res.status(404).json({ message: 'Projeto não encontrado' });
+        }
+
         res.json(updatedProject);
     } catch (err) {
+        console.error('Update Error:', err);
         res.status(400).json({ message: err.message });
     }
 });

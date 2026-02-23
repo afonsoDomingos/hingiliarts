@@ -231,22 +231,28 @@ const saveProject = async () => {
   fd.append('title', formData.value.title);
   fd.append('category', formData.value.category);
   fd.append('description', formData.value.description);
-  selectedFiles.value.forEach(file => fd.append('images', file));
+  
+  if (selectedFiles.value.length > 0) {
+    selectedFiles.value.forEach(file => fd.append('images', file));
+  }
 
   try {
+    const config = {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    };
+
     if (isEditing.value) {
-      await api.put(`/admin/projects/${currentId.value}`, fd, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      await api.put(`/admin/projects/${currentId.value}`, fd, config);
     } else {
-      await api.post('/admin/projects', fd, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      await api.post('/admin/projects', fd, config);
     }
+    
     showModal.value = false;
     await fetchData();
+    alert(isEditing.value ? 'Projeto atualizado com sucesso!' : 'Projeto criado com sucesso!');
   } catch (err) {
-    saveError.value = 'Erro ao guardar dados. Verifica a tua conexão.';
+    console.error('API Error:', err);
+    saveError.value = err.response?.data?.message || 'Erro ao guardar dados. Tente novamente.';
   } finally {
     isSaving.value = false;
   }
