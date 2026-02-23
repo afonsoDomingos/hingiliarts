@@ -28,6 +28,7 @@ const isMenuActive = ref(false);
 
 const navLinks = [
   { text: 'Início', href: '#home' },
+  { text: 'Sobre', href: '#about' },
   { text: 'Serviços', href: '#services' },
   { text: 'Portfólio', href: '#portfolio' },
   { text: 'Processo', href: '#process' },

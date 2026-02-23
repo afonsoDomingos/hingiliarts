@@ -2,6 +2,7 @@
   <div class="app-wrapper">
     <Navbar />
     <Hero />
+    <About />
     
     <!-- Highlights -->
     <section class="highlights section">
@@ -66,6 +67,7 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import Navbar from '../components/Navbar.vue';
 import Hero from '../components/Hero.vue';
+import About from '../components/About.vue';
 import Services from '../components/Services.vue';
 import Portfolio from '../components/Portfolio.vue';
 import Footer from '../components/Footer.vue';
