@@ -187,11 +187,21 @@ app.delete('/api/admin/projects/:id', protect, async (req, res) => {
 });
 
 // Admin: Update Project
-app.put('/api/admin/projects/:id', protect, async (req, res) => {
+app.put('/api/admin/projects/:id', protect, upload.array('images', 5), async (req, res) => {
     try {
+        const { title, category, description } = req.body;
+        const updateData = { title, category, description };
+
+        // Se houver novas imagens, adicionamos ao array existente
+        if (req.files && req.files.length > 0) {
+            const newImages = req.files.map(file => file.path);
+            const project = await Project.findById(req.params.id);
+            updateData.images = [...(project.images || []), ...newImages];
+        }
+
         const updatedProject = await Project.findByIdAndUpdate(
             req.params.id,
-            { $set: req.body },
+            { $set: updateData },
             { new: true }
         );
         res.json(updatedProject);

@@ -118,18 +118,18 @@
             <textarea v-model="formData.description" rows="2" placeholder="Breve descrição..."></textarea>
           </div>
           
-          <div class="form-group" v-if="!isEditing">
-            <label>Imagens * (até 5 fotos)</label>
+          <div class="form-group">
+            <label>{{ isEditing ? 'Adicionar mais Imagens (Opcional)' : 'Imagens * (até 5 fotos)' }}</label>
             <div class="file-drop" @click="$refs.fileInput.click()">
               <i class="fa-solid fa-cloud-arrow-up"></i>
               <p v-if="selectedFiles.length === 0">Clica para seleccionar imagens</p>
               <p v-else><strong>{{ selectedFiles.length }} ficheiro(s)</strong> selecionado(s)</p>
             </div>
-            <input ref="fileInput" type="file" multiple @change="handleFileChange" accept="image/*" required style="display:none">
+            <input ref="fileInput" type="file" multiple @change="handleFileChange" accept="image/*" :required="!isEditing" style="display:none">
           </div>
           
-          <div v-else class="edit-note">
-            <p><i class="fa-solid fa-info-circle"></i> Para mudar as imagens, deve apagar e criar o projeto novamente. No modo de edição só pode mudar os textos.</p>
+          <div v-if="isEditing" class="edit-note">
+            <p><i class="fa-solid fa-camera-retro"></i> Notas: As novas imagens serão adicionadas ao projeto. Os textos atuais serão atualizados.</p>
           </div>
 
           <p v-if="saveError" class="error-msg">{{ saveError }}</p>
@@ -175,13 +175,8 @@ const api = axios.create({
 });
 
 const categoryLabel = (cat) => {
-  const map = { 
-    mural: 'Mural Artístico', 
-    ads: 'Publicidade & Branding', 
-    portrait: 'Retratos', 
-    mosaic: 'Projeto Decorativo' 
-  };
-  return map[cat] || 'Sem Categoria'; // ✅ Evita o "undefined"
+  const map = { mural: 'Mural Artístico', ads: 'Publicidade & Branding', portrait: 'Retratos', mosaic: 'Projeto Decorativo' };
+  return map[cat] || 'Sem Categoria';
 };
 
 const formatDate = (date) => new Date(date).toLocaleDateString();
@@ -223,6 +218,7 @@ const editProject = (project) => {
     category: project.category, 
     description: project.description 
   };
+  selectedFiles.value = [];
   saveError.value = '';
   showModal.value = true;
 };
@@ -231,16 +227,18 @@ const saveProject = async () => {
   isSaving.value = true;
   saveError.value = '';
 
+  const fd = new FormData();
+  fd.append('title', formData.value.title);
+  fd.append('category', formData.value.category);
+  fd.append('description', formData.value.description);
+  selectedFiles.value.forEach(file => fd.append('images', file));
+
   try {
     if (isEditing.value) {
-      await api.put(`/admin/projects/${currentId.value}`, formData.value);
+      await api.put(`/admin/projects/${currentId.value}`, fd, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
     } else {
-      const fd = new FormData();
-      fd.append('title', formData.value.title);
-      fd.append('category', formData.value.category);
-      fd.append('description', formData.value.description);
-      selectedFiles.value.forEach(file => fd.append('images', file));
-      
       await api.post('/admin/projects', fd, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
@@ -278,10 +276,10 @@ onMounted(fetchData);
 .admin-dashboard {
   display: flex;
   min-height: 100vh;
-  background: #0d0d0f; /* Mais escuro e premium */
+  background: #0d0d0f;
 }
 
-/* ====== Sidebar ====== */
+/* Sidebar */
 .sidebar {
   width: 270px;
   background: #131317;
@@ -301,7 +299,7 @@ onMounted(fetchData);
 
 .admin-label {
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: #888;
   text-transform: uppercase;
   letter-spacing: 2px;
 }
@@ -360,7 +358,7 @@ onMounted(fetchData);
   width: 100%;
 }
 
-/* ====== Content Area ====== */
+/* Content Area */
 .content {
   flex: 1;
   padding: 50px;
@@ -380,7 +378,7 @@ onMounted(fetchData);
   margin-top: 5px;
 }
 
-/* ====== Projects Grid ====== */
+/* Projects Grid */
 .projects-admin-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -422,9 +420,7 @@ onMounted(fetchData);
   backdrop-filter: blur(5px);
 }
 
-.card-info {
-  padding: 20px;
-}
+.card-info { padding: 20px; }
 
 .card-info h3 {
   font-size: 1.1rem;
@@ -465,21 +461,11 @@ onMounted(fetchData);
 .btn-delete { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 .btn-delete:hover { background: #ef4444; color: #fff; }
 
-/* ====== State Styles ====== */
-.empty-state {
-  text-align: center;
-  padding: 100px;
-  color: #555;
-}
+/* States */
+.empty-state { text-align: center; padding: 100px; color: #555; }
+.loading-state { text-align: center; padding: 50px; font-size: 1.2rem; color: #ff8a00; }
 
-.loading-state {
-  text-align: center;
-  padding: 50px;
-  font-size: 1.2rem;
-  color: #ff8a00;
-}
-
-/* ====== Modal ====== */
+/* Modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -566,7 +552,7 @@ onMounted(fetchData);
   margin-top: 10px;
 }
 
-/* ====== Messages ====== */
+/* Messages */
 .message-card {
   background: #1a1a20;
   padding: 25px;
