@@ -560,4 +560,50 @@ onMounted(fetchData);
   margin-bottom: 20px;
   border-left: 4px solid #ff8a00;
 }
+
+/* ====== Responsive Adjustments ====== */
+@media (max-width: 992px) {
+  .sidebar {
+    width: 80px;
+    padding: 20px 0;
+  }
+  .sidebar-header h2, .admin-label, .sidebar-nav button span, .admin-user, .btn-logout span {
+    display: none;
+  }
+  .sidebar-nav button {
+    justify-content: center;
+    padding: 15px;
+  }
+  .content {
+    margin-left: 80px;
+    padding: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .content-header {
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  .projects-admin-grid {
+    grid-template-columns: 1fr;
+  }
+  .modal-card {
+    padding: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 60px;
+  }
+  .content {
+    margin-left: 60px;
+    padding: 20px;
+  }
+  .logo-text {
+    font-size: 1.2rem;
+  }
+}
 </style>
