@@ -61,6 +61,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
+import API_URL from '../config/api.js';
 
 const portfolio = ref([]);
 const currentFilter = ref('all');
@@ -85,7 +86,7 @@ const filteredPortfolio = computed(() => {
 const fetchPortfolio = async () => {
   try {
     // Attempting to fetch from backend, fallback to hardcoded if backend not running
-    const response = await axios.get('http://localhost:5000/api/portfolio');
+    const response = await axios.get(`${API_URL}/api/portfolio`);
     portfolio.value = response.data;
   } catch (error) {
     console.error('Falha ao carregar portfólio do backend:', error);

@@ -30,6 +30,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import API_URL from '../../config/api.js';
 
 const router = useRouter();
 const email = ref('');
@@ -41,7 +42,7 @@ const handleLogin = async () => {
   isLoading.value = true;
   error.value = '';
   try {
-    const response = await axios.post('http://localhost:5000/api/admin/login', {
+    const response = await axios.post(`${API_URL}/api/admin/login`, {
       email: email.value,
       password: password.value
     });

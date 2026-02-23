@@ -47,6 +47,7 @@
 <script setup>
 import { ref, reactive } from 'vue';
 import axios from 'axios';
+import API_URL from '../config/api.js';
 
 const form = reactive({
   name: '',
@@ -62,7 +63,7 @@ const submitForm = async () => {
   successMsg.value = '';
   
   try {
-    await axios.post('http://localhost:5000/api/contact', form);
+    await axios.post(`${API_URL}/api/contact`, form);
     successMsg.value = 'Mensagem enviada com sucesso!';
     form.name = '';
     form.email = '';
