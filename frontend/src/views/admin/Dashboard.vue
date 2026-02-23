@@ -44,21 +44,24 @@
       <section v-else-if="activeTab === 'projects'" class="dashboard-section">
         <div v-if="projects.length === 0" class="empty-state">
           <i class="fa-solid fa-images"></i>
-          <p>Nenhum projeto ainda. Clica em "Novo Projeto" para começar!</p>
+          <p>Nenhum projeto encontrado. Começa por adicionar um!</p>
         </div>
         <div class="projects-admin-grid" v-else>
           <div v-for="project in projects" :key="project._id" class="project-admin-card">
             <div class="card-img-wrap">
-              <img :src="project.images[0]" :alt="project.title">
-              <span class="img-count" v-if="project.images.length > 1">
+              <img :src="project.images[0]" :alt="project.title || 'Sem título'">
+              <span class="img-count" v-if="project.images && project.images.length > 1">
                 <i class="fa-solid fa-images"></i> {{ project.images.length }}
               </span>
             </div>
             <div class="card-info">
-              <h3>{{ project.title }}</h3>
+              <h3>{{ project.title || 'Sem Título' }}</h3>
               <span class="category-badge">{{ categoryLabel(project.category) }}</span>
               <div class="card-actions">
-                <button @click="deleteProject(project._id)" class="btn-delete" title="Eliminar">
+                <button @click="editProject(project)" class="btn-action btn-edit" title="Editar">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button @click="deleteProject(project._id)" class="btn-action btn-delete" title="Eliminar">
                   <i class="fa-solid fa-trash"></i>
                 </button>
               </div>
@@ -88,21 +91,21 @@
       </section>
     </main>
 
-    <!-- Modal Novo Projeto -->
+    <!-- Modal Novo/Editar Projeto -->
     <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
       <div class="modal-card">
         <div class="modal-header">
-          <h2>Adicionar Novo Projeto</h2>
+          <h2>{{ isEditing ? 'Editar Projeto' : 'Adicionar Novo Projeto' }}</h2>
           <button class="modal-close" @click="showModal = false"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <form @submit.prevent="createProject" class="project-form">
+        <form @submit.prevent="saveProject" class="project-form">
           <div class="form-group">
             <label>Título do Projeto *</label>
-            <input v-model="newProject.title" type="text" placeholder="Ex: Mural do Hospital Central" required>
+            <input v-model="formData.title" type="text" placeholder="Ex: Mural Artístico" required>
           </div>
           <div class="form-group">
             <label>Categoria *</label>
-            <select v-model="newProject.category" required>
+            <select v-model="formData.category" required>
               <option value="" disabled>Escolha a Categoria</option>
               <option value="mural">Mural Artístico</option>
               <option value="ads">Publicidade & Branding</option>
@@ -112,16 +115,21 @@
           </div>
           <div class="form-group">
             <label>Descrição</label>
-            <textarea v-model="newProject.description" rows="2" placeholder="Breve descrição do projeto..."></textarea>
+            <textarea v-model="formData.description" rows="2" placeholder="Breve descrição..."></textarea>
           </div>
-          <div class="form-group">
+          
+          <div class="form-group" v-if="!isEditing">
             <label>Imagens * (até 5 fotos)</label>
             <div class="file-drop" @click="$refs.fileInput.click()">
               <i class="fa-solid fa-cloud-arrow-up"></i>
               <p v-if="selectedFiles.length === 0">Clica para seleccionar imagens</p>
-              <p v-else><strong>{{ selectedFiles.length }} ficheiro(s)</strong> seleccionado(s)</p>
+              <p v-else><strong>{{ selectedFiles.length }} ficheiro(s)</strong> selecionado(s)</p>
             </div>
             <input ref="fileInput" type="file" multiple @change="handleFileChange" accept="image/*" required style="display:none">
+          </div>
+          
+          <div v-else class="edit-note">
+            <p><i class="fa-solid fa-info-circle"></i> Para mudar as imagens, deve apagar e criar o projeto novamente. No modo de edição só pode mudar os textos.</p>
           </div>
 
           <p v-if="saveError" class="error-msg">{{ saveError }}</p>
@@ -130,7 +138,7 @@
             <button type="button" @click="showModal = false" class="btn btn-secondary">Cancelar</button>
             <button type="submit" class="btn btn-primary" :disabled="isSaving">
               <i v-if="isSaving" class="fa-solid fa-circle-notch fa-spin"></i>
-              {{ isSaving ? 'A guardar...' : 'Criar Projeto' }}
+              {{ isSaving ? 'A guardar...' : (isEditing ? 'Atualizar Projeto' : 'Criar Projeto') }}
             </button>
           </div>
         </form>
@@ -152,11 +160,14 @@ const messages = ref([]);
 const showModal = ref(false);
 const isSaving = ref(false);
 const isLoading = ref(false);
+const isEditing = ref(false);
+const currentId = ref(null);
 const saveError = ref('');
 const adminUser = ref(JSON.parse(localStorage.getItem('adminUser') || 'null'));
 
-const newProject = ref({ title: '', category: '', description: '' });
+const formData = ref({ title: '', category: '', description: '' });
 const selectedFiles = ref([]);
+const fileInput = ref(null);
 
 const api = axios.create({
   baseURL: `${API_URL}/api`,
@@ -164,11 +175,16 @@ const api = axios.create({
 });
 
 const categoryLabel = (cat) => {
-  const map = { mural: 'Mural Artístico', ads: 'Publicidade & Branding', portrait: 'Retratos', mosaic: 'Projeto Decorativo' };
-  return map[cat] || cat;
+  const map = { 
+    mural: 'Mural Artístico', 
+    ads: 'Publicidade & Branding', 
+    portrait: 'Retratos', 
+    mosaic: 'Projeto Decorativo' 
+  };
+  return map[cat] || 'Sem Categoria'; // ✅ Evita o "undefined"
 };
 
-const formatDate = (date) => new Date(date).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', year: 'numeric' });
+const formatDate = (date) => new Date(date).toLocaleDateString();
 
 const fetchData = async () => {
   isLoading.value = true;
@@ -191,45 +207,60 @@ const handleFileChange = (e) => {
 };
 
 const openModal = () => {
-  newProject.value = { title: '', category: '', description: '' };
+  isEditing.value = false;
+  currentId.value = null;
+  formData.value = { title: '', category: '', description: '' };
   selectedFiles.value = [];
   saveError.value = '';
   showModal.value = true;
 };
 
-// ✅ BUG CORRIGIDO: agora usa newProject.value.title (e não newProject.title)
-const createProject = async () => {
+const editProject = (project) => {
+  isEditing.value = true;
+  currentId.value = project._id;
+  formData.value = { 
+    title: project.title, 
+    category: project.category, 
+    description: project.description 
+  };
+  saveError.value = '';
+  showModal.value = true;
+};
+
+const saveProject = async () => {
   isSaving.value = true;
   saveError.value = '';
 
-  const formData = new FormData();
-  formData.append('title', newProject.value.title);
-  formData.append('category', newProject.value.category);
-  formData.append('description', newProject.value.description);
-  selectedFiles.value.forEach(file => formData.append('images', file));
-
   try {
-    await api.post('/admin/projects', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    if (isEditing.value) {
+      await api.put(`/admin/projects/${currentId.value}`, formData.value);
+    } else {
+      const fd = new FormData();
+      fd.append('title', formData.value.title);
+      fd.append('category', formData.value.category);
+      fd.append('description', formData.value.description);
+      selectedFiles.value.forEach(file => fd.append('images', file));
+      
+      await api.post('/admin/projects', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+    }
     showModal.value = false;
-    newProject.value = { title: '', category: '', description: '' };
-    selectedFiles.value = [];
     await fetchData();
   } catch (err) {
-    saveError.value = err.response?.data?.message || 'Erro ao guardar projeto. Tente novamente.';
+    saveError.value = 'Erro ao guardar dados. Verifica a tua conexão.';
   } finally {
     isSaving.value = false;
   }
 };
 
 const deleteProject = async (id) => {
-  if (confirm('Tens a certeza que queres eliminar este projeto?')) {
+  if (confirm('Queres mesmo eliminar este projeto?')) {
     try {
       await api.delete(`/admin/projects/${id}`);
       await fetchData();
     } catch (err) {
-      alert('Erro ao eliminar: ' + (err.response?.data?.message || err.message));
+      alert('Erro ao apagar');
     }
   }
 };
@@ -247,20 +278,19 @@ onMounted(fetchData);
 .admin-dashboard {
   display: flex;
   min-height: 100vh;
-  background: var(--bg-main);
+  background: #0d0d0f; /* Mais escuro e premium */
 }
 
 /* ====== Sidebar ====== */
 .sidebar {
   width: 270px;
-  background: var(--bg-secondary);
+  background: #131317;
   border-right: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   flex-direction: column;
   padding: 30px 0;
   position: fixed;
   top: 0; left: 0; bottom: 0;
-  z-index: 100;
 }
 
 .sidebar-header {
@@ -274,7 +304,6 @@ onMounted(fetchData);
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 2px;
-  margin-top: 5px;
 }
 
 .sidebar-nav { flex: 1; }
@@ -285,14 +314,13 @@ onMounted(fetchData);
   padding: 15px 30px;
   background: transparent;
   border: none;
-  color: var(--text-secondary);
+  color: #888;
   font-size: 1rem;
   cursor: pointer;
-  transition: var(--transition);
+  transition: 0.3s;
   display: flex;
   align-items: center;
   gap: 15px;
-  font-family: var(--font-sans);
 }
 
 .sidebar-nav button.active,
@@ -306,308 +334,244 @@ onMounted(fetchData);
   background: #ff8a00;
   color: #fff;
   font-size: 0.7rem;
-  padding: 2px 7px;
-  border-radius: 20px;
+  padding: 2px 8px;
+  border-radius: 10px;
   margin-left: auto;
 }
 
 .sidebar-footer {
-  padding: 20px 30px 0;
+  padding: 20px 30px;
   border-top: 1px solid rgba(255,255,255,0.05);
 }
 
 .admin-user {
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: #888;
   margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .btn-logout {
   background: transparent;
   border: 1px solid rgba(239, 68, 68, 0.3);
   color: #ef4444;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
   padding: 8px 15px;
   border-radius: 8px;
+  cursor: pointer;
   width: 100%;
-  font-family: var(--font-sans);
-  transition: var(--transition);
 }
 
-.btn-logout:hover { background: rgba(239,68,68,0.1); }
-
-/* ====== Content ====== */
+/* ====== Content Area ====== */
 .content {
   flex: 1;
-  padding: 40px;
+  padding: 50px;
   margin-left: 270px;
 }
 
 .content-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 40px;
+  align-items: flex-start;
+  margin-bottom: 50px;
 }
 
 .sub-header {
-  color: var(--text-secondary);
+  color: #666;
   font-size: 0.9rem;
-  margin-top: 4px;
-}
-
-/* ====== States ====== */
-.loading-state, .empty-state {
-  text-align: center;
-  padding: 80px;
-  color: var(--text-secondary);
-}
-
-.empty-state i {
-  font-size: 3rem;
-  margin-bottom: 15px;
-  display: block;
-  color: rgba(255,138,0,0.3);
+  margin-top: 5px;
 }
 
 /* ====== Projects Grid ====== */
 .projects-admin-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 25px;
 }
 
 .project-admin-card {
-  background: var(--bg-card);
-  border-radius: 12px;
+  background: #1a1a20;
+  border-radius: 16px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: var(--transition);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  transition: 0.4s ease;
 }
 
 .project-admin-card:hover {
-  border-color: rgba(255,138,0,0.3);
-  transform: translateY(-3px);
+  transform: translateY(-5px);
+  border-color: rgba(255, 138, 0, 0.3);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-.card-img-wrap { position: relative; }
+.card-img-wrap {
+  position: relative;
+  height: 200px;
+}
 
 .card-img-wrap img {
   width: 100%;
-  aspect-ratio: 1;
+  height: 100%;
   object-fit: cover;
-  display: block;
 }
 
 .img-count {
   position: absolute;
-  bottom: 8px; right: 8px;
-  background: rgba(0,0,0,0.7);
-  color: #fff;
-  font-size: 0.75rem;
-  padding: 3px 8px;
+  top: 12px; right: 12px;
+  background: rgba(0,0,0,0.6);
+  padding: 4px 10px;
   border-radius: 20px;
+  font-size: 0.75rem;
+  backdrop-filter: blur(5px);
 }
 
-.card-info { padding: 15px; }
+.card-info {
+  padding: 20px;
+}
 
 .card-info h3 {
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 6px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin-bottom: 5px;
+  color: #eee;
 }
 
 .category-badge {
   font-size: 0.75rem;
   color: #ff8a00;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
 }
 
 .card-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 10px;
+  gap: 12px;
+  margin-top: 20px;
 }
 
-.btn-delete {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  border: none;
-  width: 32px; height: 32px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: var(--transition);
+.btn-action {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-.btn-delete:hover { background: rgba(239,68,68,0.3); }
+.btn-edit { background: rgba(255, 255, 255, 0.05); color: #fff; }
+.btn-edit:hover { background: rgba(255, 138, 0, 0.2); color: #ff8a00; }
 
-/* ====== Messages ====== */
-.message-card {
-  background: var(--bg-card);
-  padding: 20px 25px;
-  border-radius: 12px;
-  margin-bottom: 15px;
-  border-left: 3px solid #ff8a00;
-  transition: var(--transition);
+.btn-delete { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.btn-delete:hover { background: #ef4444; color: #fff; }
+
+/* ====== State Styles ====== */
+.empty-state {
+  text-align: center;
+  padding: 100px;
+  color: #555;
 }
 
-.message-card:hover { background: rgba(255,255,255,0.04); }
-
-.msg-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 12px;
-}
-
-.msg-header strong { display: block; font-size: 1rem; }
-
-.msg-email {
+.loading-state {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2rem;
   color: #ff8a00;
-  font-size: 0.85rem;
-  margin-top: 3px;
-  display: block;
-}
-
-.msg-date {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-
-.msg-text {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  line-height: 1.6;
 }
 
 /* ====== Modal ====== */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.85);
+  background: rgba(0,0,0,0.9);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
-  padding: 20px;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
 }
 
 .modal-card {
-  background: var(--bg-secondary);
-  padding: 35px;
-  border-radius: 20px;
+  background: #1a1a20;
+  padding: 40px;
+  border-radius: 24px;
   width: 100%;
-  max-width: 520px;
+  max-width: 500px;
   border: 1px solid rgba(255,255,255,0.05);
-  max-height: 90vh;
-  overflow-y: auto;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
+  margin-bottom: 30px;
 }
 
 .modal-close {
   background: transparent;
   border: none;
-  color: var(--text-secondary);
-  font-size: 1.3rem;
+  color: #555;
+  font-size: 1.5rem;
   cursor: pointer;
-  transition: var(--transition);
 }
-
-.modal-close:hover { color: #fff; }
 
 .project-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
 }
 
 .form-group label {
-  display: block;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
+  font-size: 0.8rem;
+  color: #888;
   margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  display: block;
 }
 
-.form-group input,
-.form-group select,
-.form-group textarea {
+.form-group input, .form-group select, .form-group textarea {
   width: 100%;
-  padding: 12px 15px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px;
+  padding: 14px;
+  background: #131317;
+  border: 1px solid #333;
+  border-radius: 12px;
   color: #fff;
-  font-family: var(--font-sans);
-  font-size: 0.95rem;
-  transition: var(--transition);
+  font-size: 1rem;
 }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #ff8a00;
-}
-
-.form-group select option { background: #131317; }
+.form-group input:focus { border-color: #ff8a00; outline: none; }
 
 .file-drop {
-  border: 2px dashed rgba(255,255,255,0.15);
-  border-radius: 10px;
-  padding: 25px;
+  border: 2px dashed #333;
+  padding: 20px;
   text-align: center;
+  border-radius: 12px;
   cursor: pointer;
-  transition: var(--transition);
-  color: var(--text-secondary);
 }
 
-.file-drop:hover {
-  border-color: #ff8a00;
-  color: #fff;
-}
+.file-drop:hover { border-color: #ff8a00; }
 
-.file-drop i {
-  font-size: 2rem;
-  margin-bottom: 10px;
-  display: block;
-  color: #ff8a00;
-}
-
-.error-msg {
-  color: #ef4444;
-  font-size: 0.85rem;
+.edit-note {
+  font-size: 0.8rem;
+  color: #ffb700;
+  background: rgba(255, 183, 0, 0.1);
   padding: 10px;
-  background: rgba(239,68,68,0.1);
   border-radius: 8px;
-  border-left: 3px solid #ef4444;
+  line-height: 1.4;
 }
 
 .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 15px;
-  margin-top: 5px;
+  margin-top: 10px;
+}
+
+/* ====== Messages ====== */
+.message-card {
+  background: #1a1a20;
+  padding: 25px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  border-left: 4px solid #ff8a00;
 }
 </style>

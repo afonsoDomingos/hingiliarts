@@ -186,6 +186,20 @@ app.delete('/api/admin/projects/:id', protect, async (req, res) => {
     }
 });
 
+// Admin: Update Project
+app.put('/api/admin/projects/:id', protect, async (req, res) => {
+    try {
+        const updatedProject = await Project.findByIdAndUpdate(
+            req.params.id,
+            { $set: req.body },
+            { new: true }
+        );
+        res.json(updatedProject);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
 app.get('/api/admin/messages', protect, async (req, res) => {
     try {
         const messages = await Message.find().sort({ createdAt: -1 });
