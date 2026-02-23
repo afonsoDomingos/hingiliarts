@@ -25,15 +25,21 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Permite chamadas sem origin (Postman, curl) e origens na whitelist
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
+        // Sem origin (Postman, curl) → permite
+        if (!origin) return callback(null, true);
+
+        // Origin na whitelist → permite
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+
+        // Qualquer subdomínio .vercel.app → permite (segurança adicional para deploys preview)
+        if (origin.endsWith('.vercel.app')) return callback(null, true);
+
+        // Bloqueia tudo o resto
+        callback(new Error(`CORS bloqueado para: ${origin}`));
     },
     credentials: true
 }));
+
 
 app.use(express.json());
 app.use(morgan('dev'));
