@@ -28,7 +28,7 @@
             <img :src="item.images[0]" :alt="item.title">
             <div class="portfolio-overlay">
               <h4 class="p-title">{{ item.title }}</h4>
-              <span class="p-cat">{{ item.description }}</span>
+              <span class="p-cat">{{ categoryLabel(item.category) }}</span>
             </div>
           </div>
         </div>
@@ -110,6 +110,16 @@ const nextImage = () => {
 
 const prevImage = () => {
   currentImageIndex.value = (currentImageIndex.value - 1 + currentAlbum.value.length) % currentAlbum.value.length;
+};
+
+const categoryLabel = (cat) => {
+  const map = { 
+    mural: 'Mural Artístico', 
+    ads: 'Publicidade & Branding', 
+    portrait: 'Retrato', 
+    mosaic: 'Projeto Decorativo' 
+  };
+  return map[cat] || cat;
 };
 
 onMounted(() => {

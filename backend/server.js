@@ -100,8 +100,31 @@ app.get('/api/portfolio', async (req, res) => {
 // Public: Submit Contact Form
 app.post('/api/contact', async (req, res) => {
     try {
+        const { name, email, message } = req.body;
         const newMessage = new Message(req.body);
         await newMessage.save();
+
+        // Configuração do Nodemailer (opcional no .env)
+        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+            const nodemailer = require('nodemailer');
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS
+                }
+            });
+
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: process.env.ADMIN_EMAIL || 'hingiliarteslda@gmail.com',
+                subject: `Nova Mensagem: ${name}`,
+                text: `Nome: ${name}\nEmail: ${email}\nMensagem: ${message}`
+            };
+
+            transporter.sendMail(mailOptions).catch(err => console.log('Mail error:', err));
+        }
+
         res.status(201).json({ success: true, message: 'Mensagem enviada com sucesso!' });
     } catch (err) {
         res.status(400).json({ message: err.message });
