@@ -2,13 +2,13 @@
   <div class="app-wrapper">
     <Navbar />
     <Hero />
-    <About />
+    <About class="reveal" />
     
     <!-- Highlights -->
     <section class="highlights section">
       <div class="container">
         <div class="hl-grid">
-          <div v-for="hl in highlights" :key="hl.title" class="hl-item">
+          <div v-for="(hl, index) in highlights" :key="hl.title" :class="['hl-item reveal', `reveal-delay-${index + 1}`]">
             <div class="icon-box"><i :class="hl.icon"></i></div>
             <h3>{{ hl.title }}</h3>
             <p>{{ hl.text }}</p>
@@ -17,16 +17,16 @@
       </div>
     </section>
 
-    <Services />
-    <Portfolio />
+    <Services class="reveal" />
+    <Portfolio class="reveal" />
 
     <!-- Process -->
     <section class="process section bg-darker" id="process">
       <div class="container text-center">
-        <h2 class="section-title">Processo de <span class="highlight">Trabalho</span></h2>
-        <div class="divider align-center"></div>
+        <h2 class="section-title reveal">Processo de <span class="highlight">Trabalho</span></h2>
+        <div class="divider align-center reveal"></div>
         <div class="process-wrapper">
-          <div v-for="(step, index) in processSteps" :key="index" class="process-step">
+          <div v-for="(step, index) in processSteps" :key="index" :class="['process-step reveal', `reveal-delay-${index + 1}`]">
             <div class="step-num">{{ step.num }}</div>
             <div class="step-content">
               <h4>{{ step.title }}</h4>
@@ -38,7 +38,7 @@
     </section>
 
     <!-- CTA -->
-    <section class="cta-banner">
+    <section class="cta-banner reveal">
       <div class="container text-center cta-content">
         <h2 class="cta-title">Quer transformar o seu espaço?</h2>
         <p>Traga a sua ideia. Nós damos a col e a dimensão.</p>
@@ -96,8 +96,30 @@ const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
+const initReveal = () => {
+  const observerOptions = {
+    threshold: 0.15,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+        // Uma vez animado, não precisamos mais observar
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  const revealElements = document.querySelectorAll('.reveal');
+  revealElements.forEach(el => observer.observe(el));
+};
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
+  // Pequeno timeout para garantir que o DOM está pronto e evitar conflitos de carregamento
+  setTimeout(initReveal, 100);
 });
 
 onUnmounted(() => {

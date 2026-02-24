@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const Project = require('./models/Project');
@@ -15,6 +17,16 @@ const User = require('./models/User');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Security Middleware
+app.use(helmet());
+
+// Rate Limiting para o login (protege contra ataques de força bruta)
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 10, // limite de 10 tentativas por IP
+    message: { message: 'Muitas tentativas de login. Tente novamente em 15 minutos.' }
+});
 
 // CORS Configuration
 const allowedOrigins = [
@@ -73,7 +85,7 @@ const seedAdmin = async () => {
         if (adminCount === 0) {
             const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin123', 10);
             await User.create({
-                email: process.env.ADMIN_EMAIL || 'admin@hingilearts.com',
+                email: process.env.ADMIN_EMAIL || 'admin@hingiliarts.com',
                 password: hashedPassword,
                 name: 'Hingili Admin'
             });
@@ -132,7 +144,7 @@ app.post('/api/contact', async (req, res) => {
 });
 
 // Admin: Auth Login
-app.post('/api/admin/login', async (req, res) => {
+app.post('/api/admin/login', loginLimiter, async (req, res) => {
     const { email, password } = req.body;
     try {
         const user = await User.findOne({ email });
