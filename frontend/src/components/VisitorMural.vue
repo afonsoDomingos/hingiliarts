@@ -23,6 +23,8 @@
               {{ submitting ? 'A Carimbar...' : 'Carimbar Mural' }}
             </button>
           </form>
+          <p v-if="error" class="error-msg text-center mt-3">{{ error }}</p>
+          <p v-if="success" class="success-msg text-center mt-3">Carimbado com sucesso! ✨</p>
         </div>
 
         <!-- The Wall -->
@@ -55,6 +57,8 @@ import API_URL from '../config/api';
 const stamps = ref([]);
 const newName = ref('');
 const submitting = ref(false);
+const error = ref('');
+const success = ref(false);
 
 const fetchStamps = async () => {
   try {
@@ -68,14 +72,21 @@ const fetchStamps = async () => {
 const submitStamp = async () => {
   if (!newName.value.trim()) return;
   submitting.value = true;
+  error.value = '';
+  success.value = false;
+  
   try {
     const res = await axios.post(`${API_URL}/api/stamps`, { name: newName.value });
     stamps.value.unshift(res.data);
     newName.value = '';
-    // Limit to 50 items visually
+    success.value = true;
+    setTimeout(() => { success.value = false; }, 3000);
+    
+    // Limit visually
     if (stamps.value.length > 50) stamps.value.pop();
   } catch (err) {
     console.error('Erro ao carimbar:', err);
+    error.value = 'Erro ao carimbar. Tente novamente.';
   } finally {
     submitting.value = false;
   }
