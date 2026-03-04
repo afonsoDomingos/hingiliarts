@@ -63,6 +63,9 @@
 
     <!-- Floating Buttons -->
     <div class="floating-controls">
+      <router-link to="/auctions" class="float-btn float-auction" title="Leilões">
+        <i class="fa-solid fa-gavel"></i>
+      </router-link>
       <a href="https://wa.me/258844473620" target="_blank" class="float-btn float-whatsapp">
         <i class="fa-brands fa-whatsapp"></i>
       </a>
