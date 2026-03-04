@@ -2,11 +2,14 @@
   <div class="auctions-page">
     <Navbar />
     
-    <section class="auctions-hero section bg-darker">
+    <section class="auctions-hero section bg-darker py-4">
       <div class="container text-center reveal">
         <span class="sub-title">Exclusividade</span>
-        <h2 class="section-title">Leilões de <span class="highlight">Obras de Arte</span></h2>
-        <p class="section-desc">Dispute peças únicas da Hingili Arts. Cada licitação aproxima-o de uma obra original.</p>
+        <h2 class="section-title mb-2">Leilões de <span class="highlight">Obras de Arte</span></h2>
+        <p class="section-desc mb-3">Dispute peças únicas da Hingili Arts. Cada licitação aproxima-o de uma obra original.</p>
+        <div class="artist-cta mb-3">
+          <router-link to="/auctions/submit" class="btn btn-outline small-btn">É um Artista? Submeta a sua Obra</router-link>
+        </div>
         <div class="divider align-center"></div>
       </div>
     </section>
@@ -98,20 +101,24 @@ onMounted(fetchAuctions);
 
 <style scoped>
 .auctions-page {
-  padding-top: 80px;
+  padding-top: 60px;
+}
+
+.auctions-hero {
+  padding: 40px 0 !important;
 }
 
 .section-desc {
   max-width: 600px;
-  margin: 0 auto 30px;
+  margin: 0 auto 15px;
   color: var(--text-secondary);
-  font-size: 1.1rem;
+  font-size: 0.95rem;
 }
 
 .a-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
 }
 
 .auction-card {
@@ -129,7 +136,7 @@ onMounted(fetchAuctions);
 
 .a-img-box {
   position: relative;
-  aspect-ratio: 1/1;
+  aspect-ratio: 3/2; /* Even more compact aspect ratio */
   overflow: hidden;
 }
 
@@ -160,13 +167,14 @@ onMounted(fetchAuctions);
 .a-badge.scheduled { background: #f59e0b; color: #fff; }
 
 .a-content {
-  padding: 30px;
+  padding: 15px;
 }
 
 .a-title {
   font-family: var(--font-serif);
-  font-size: 1.5rem;
-  margin-bottom: 20px;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  text-transform: uppercase;
   color: #fff;
 }
 
@@ -188,7 +196,7 @@ onMounted(fetchAuctions);
 }
 
 .p-value {
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   font-weight: 800;
   color: var(--accent-primary);
 }

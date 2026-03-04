@@ -18,9 +18,13 @@ const AuctionSchema = new mongoose.Schema({
     endTime: { type: Date, required: true },
     status: {
         type: String,
-        enum: ['active', 'ended', 'scheduled'],
-        default: 'active'
+        enum: ['active', 'ended', 'scheduled', 'pending', 'rejected'],
+        default: 'pending'
     },
+    artistName: { type: String },
+    artistContact: { type: String },
+    views: { type: Number, default: 0 },
+    likes: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now }
 });
 

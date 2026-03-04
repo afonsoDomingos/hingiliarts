@@ -107,18 +107,36 @@
           <p>Nenhum leilão em curso. Começa por criar um!</p>
         </div>
         <div class="projects-admin-grid" v-else>
-          <div v-for="auction in auctions" :key="auction._id" class="project-admin-card">
+          <div v-for="auction in auctions" :key="auction._id" :class="['project-admin-card', auction.status]">
             <div class="card-img-wrap">
               <img :src="auction.imageUrl" :alt="auction.title">
-              <span class="img-count" :class="auction.status">{{ auction.status }}</span>
+              <span :class="['status-badge', auction.status]">{{ auction.status }}</span>
             </div>
             <div class="card-info">
-              <h3>{{ auction.title }}</h3>
-              <p class="price-info">Preço Actual: <strong>{{ formatCurrency(auction.currentPrice) }} MT</strong></p>
-              <div class="card-actions">
-                <button @click="confirmDeleteAuction(auction._id)" class="btn-action btn-delete" title="Eliminar">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
+              <div class="card-title-row">
+                <h3>{{ auction.title }}</h3>
+                <span class="price-tag">{{ formatCurrency(auction.currentPrice) }} MT</span>
+              </div>
+              
+              <div v-if="auction.artistName" class="artist-info-admin">
+                <p><i class="fa-solid fa-user"></i> {{ auction.artistName }}</p>
+                <p><i class="fa-solid fa-phone"></i> {{ auction.artistContact }}</p>
+              </div>
+
+              <div class="card-actions-admin">
+                <template v-if="auction.status === 'pending'">
+                  <button @click="updateAuctionStatus(auction._id, 'active')" class="btn-approve" title="Aprovar e Publicar">
+                    <i class="fa-solid fa-check"></i> Aprovar
+                  </button>
+                  <button @click="updateAuctionStatus(auction._id, 'rejected')" class="btn-reject" title="Rejeitar">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </template>
+                <template v-else>
+                  <button @click="confirmDeleteAuction(auction._id)" class="btn-action btn-delete" title="Eliminar">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </template>
               </div>
             </div>
           </div>
@@ -270,7 +288,7 @@ const fetchData = async () => {
     const [pRes, mRes, aRes] = await Promise.all([
       api.get('/portfolio'),
       api.get('/admin/messages'),
-      api.get('/auctions')
+      api.get('/admin/auctions')
     ]);
     projects.value = pRes.data;
     messages.value = mRes.data;
@@ -337,6 +355,16 @@ const deleteAuction = async (id) => {
     await fetchData();
   } catch (err) {
     showToast('Erro ao eliminar.', 'error');
+  }
+};
+
+const updateAuctionStatus = async (id, status) => {
+  try {
+    await api.patch(`/admin/auctions/${id}/status`, { status });
+    showToast(status === 'active' ? 'Leilão aprovado e publicado!' : 'Leilão rejeitado.');
+    await fetchData();
+  } catch (err) {
+    showToast('Erro ao atualizar estado.', 'error');
   }
 };
 
@@ -496,6 +524,84 @@ onMounted(fetchData);
 .card-info { padding: 20px; }
 .card-info h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; color: #eee; }
 .category-badge { font-size: 0.75rem; color: #ff8a00; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Status Badges */
+.status-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    backdrop-filter: blur(10px);
+}
+.status-badge.pending { background: #f59e0b; color: #fff; }
+.status-badge.active { background: #10b981; color: #fff; }
+.status-badge.rejected { background: #ef4444; color: #fff; }
+.status-badge.ended { background: #6b7280; color: #fff; }
+
+.card-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.price-tag { color: var(--accent-primary); font-weight: 800; font-size: 1rem; }
+
+.artist-info-admin {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.artist-info-admin p {
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-actions-admin {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-approve {
+    flex: 1;
+    background: #10b981;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-reject {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.btn-approve:hover { background: #059669; transform: translateY(-2px); }
+.btn-reject:hover { background: #ef4444; color: #fff; }
+
 .card-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; }
 .btn-action { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: 0.3s; }
 .btn-edit { background: rgba(255, 255, 255, 0.05); color: #fff; }

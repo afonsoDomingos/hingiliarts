@@ -16,10 +16,11 @@
     --gradient-glow: linear-gradient(135deg, rgba(255, 138, 0, 0.3), rgba(229, 46, 113, 0.3));
 
     --font-sans: 'Outfit', sans-serif;
-    --font-serif: 'Playfair Display', serif;
-
-    --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
     --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.4);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --container-width: 1200px;
+    --section-padding: 60px;
+    /* Reduced from 100px */
 }
 
 * {
@@ -196,6 +197,17 @@ img {
     letter-spacing: 1px;
 }
 
+.logo-img {
+    height: 50px;
+    width: auto;
+    object-fit: contain;
+    transition: var(--transition);
+}
+
+.scrolled .logo-img {
+    height: 40px;
+}
+
 .nav-list {
     display: flex;
     gap: 30px;
@@ -243,10 +255,11 @@ img {
 /* ====== Hero ====== */
 .hero {
     position: relative;
-    min-height: 100vh;
+    min-height: 85vh;
+    /* Reduced from 100vh */
     display: flex;
     align-items: center;
-    padding-top: 80px;
+    padding-top: 60px;
 }
 
 .hero-slider {

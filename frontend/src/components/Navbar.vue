@@ -1,8 +1,8 @@
 <template>
   <header :class="['header', { 'scrolled': isScrolled }]">
     <div class="container nav-container">
-      <a href="#" class="logo">
-        <span class="logo-text">Hingili<span class="highlight">Arts</span></span>
+      <a href="/" class="logo">
+        <img src="/assets/img/logo.png" alt="Hingili Arts Logo" class="logo-img">
       </a>
       
       <nav class="navbar">

@@ -28,6 +28,11 @@ const routes = [
         path: '/auctions/:id',
         name: 'auction-detail',
         component: () => import('../views/AuctionDetail.vue')
+    },
+    {
+        path: '/auctions/submit',
+        name: 'auction-submit',
+        component: () => import('../views/AuctionSubmit.vue')
     }
 ];
 

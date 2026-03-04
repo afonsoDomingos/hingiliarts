@@ -112,13 +112,40 @@ app.get('/api/portfolio', async (req, res) => {
 
 // --- Auction Routes ---
 
-// Public: Get All Auctions
+// Public: Get All Auctions (Only active/approved)
 app.get('/api/auctions', async (req, res) => {
     try {
-        const auctions = await Auction.find({ status: { $ne: 'ended' } }).sort({ endTime: 1 });
+        const auctions = await Auction.find({ status: { $in: ['active', 'scheduled'] } }).sort({ endTime: 1 });
         res.json(auctions);
     } catch (err) {
         res.status(500).json({ message: err.message });
+    }
+});
+
+// Public: Artist Submit Auction
+app.post('/api/auctions/submit', upload.single('image'), async (req, res) => {
+    try {
+        const { title, description, startingPrice, endTime, artistName, artistContact } = req.body;
+        const imageUrl = req.file ? req.file.path : '';
+
+        if (!imageUrl) return res.status(400).json({ message: 'Imagem é obrigatória' });
+
+        const newAuction = new Auction({
+            title,
+            description,
+            startingPrice,
+            currentPrice: startingPrice,
+            endTime,
+            imageUrl,
+            artistName,
+            artistContact,
+            status: 'pending' // Always pending until admin approves
+        });
+
+        await newAuction.save();
+        res.status(201).json({ message: 'Proposta enviada com sucesso! Aguarde pela aprovação do administrador.' });
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
 });
 
@@ -161,6 +188,26 @@ app.post('/api/auctions/:id/bid', async (req, res) => {
 
         await auction.save();
         res.json(auction);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Public: Increment Auction Views
+app.post('/api/auctions/:id/view', async (req, res) => {
+    try {
+        await Auction.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Public: Toggle/Increment Auction Likes
+app.post('/api/auctions/:id/like', async (req, res) => {
+    try {
+        const auction = await Auction.findByIdAndUpdate(req.params.id, { $inc: { likes: 1 } }, { new: true });
+        res.json({ likes: auction.likes });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -296,6 +343,30 @@ app.get('/api/admin/messages', protect, async (req, res) => {
     try {
         const messages = await Message.find().sort({ createdAt: -1 });
         res.json(messages);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Admin: Get All Auctions (Including Pending)
+app.get('/api/admin/auctions', protect, async (req, res) => {
+    try {
+        const auctions = await Auction.find().sort({ createdAt: -1 });
+        res.json(auctions);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Admin: Approve/Reject Auction
+app.patch('/api/admin/auctions/:id/status', protect, async (req, res) => {
+    try {
+        const { status } = req.body;
+        if (!['active', 'rejected', 'ended'].includes(status)) {
+            return res.status(400).json({ message: 'Estado inválido' });
+        }
+        const auction = await Auction.findByIdAndUpdate(req.params.id, { status }, { new: true });
+        res.json(auction);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
