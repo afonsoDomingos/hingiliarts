@@ -13,7 +13,7 @@
             </a>
           </li>
           <li class="nav-cta">
-            <a href="#contact" class="btn btn-primary btn-sm" @click="closeMenu">Orçamento</a>
+            <a href="/#contact" class="btn btn-primary btn-sm" @click="closeMenu">Orçamento</a>
           </li>
         </ul>
         

@@ -15,7 +15,7 @@
       <p class="hero-subtitle reveal">Do mural urbano à sinalização corporativa de luxo. Unimos a visão artística à execução técnica impecável.</p>
       
       <div class="hero-btns reveal">
-        <a href="#contact" class="btn btn-primary">Solicitar Orçamento <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="/#contact" class="btn btn-primary">Solicitar Orçamento <i class="fa-solid fa-arrow-right"></i></a>
         <a href="#portfolio" class="btn btn-outline">Ver Portfólio</a>
       </div>
     </div>

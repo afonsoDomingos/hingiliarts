@@ -50,6 +50,7 @@ app.use(cors({
         if (origin.endsWith('.vercel.app')) return callback(null, true);
 
         // Bloqueia tudo o resto
+        console.warn(`⚠️ CORS bloqueado para: ${origin}`);
         callback(new Error(`CORS bloqueado para: ${origin}`));
     },
     credentials: true
@@ -251,19 +252,28 @@ app.post('/api/contact', async (req, res) => {
 
 // --- Visitor Mural Routes ---
 
+// Public: Get Stamps
 app.get('/api/stamps', async (req, res) => {
     try {
+        console.log('📬 GET /api/stamps - Buscando selos...');
         const stamps = await VisitorStamp.find().sort({ createdAt: -1 }).limit(50);
         res.json(stamps);
     } catch (err) {
+        console.error('❌ Erro ao buscar selos:', err);
         res.status(500).json({ message: err.message });
     }
 });
 
+// Public: Add Stamp
 app.post('/api/stamps', async (req, res) => {
     try {
         const { name } = req.body;
-        if (!name) return res.status(400).json({ message: 'Nome é obrigatório' });
+        console.log(`🖋️ POST /api/stamps - Novo carimbo de: ${name}`);
+
+        if (!name) {
+            console.warn('⚠️ Nome ausente na requisição /api/stamps');
+            return res.status(400).json({ message: 'Nome é obrigatório' });
+        }
 
         const newStamp = new VisitorStamp({
             name,
@@ -271,8 +281,10 @@ app.post('/api/stamps', async (req, res) => {
         });
 
         await newStamp.save();
+        console.log('✅ Carimbo salvo com sucesso!', newStamp._id);
         res.status(201).json(newStamp);
     } catch (err) {
+        console.error('❌ Erro ao salvar carimbo:', err);
         res.status(400).json({ message: err.message });
     }
 });
