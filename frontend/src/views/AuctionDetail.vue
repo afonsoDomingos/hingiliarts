@@ -277,21 +277,21 @@ onUnmounted(() => { if (timerInterval) clearInterval(timerInterval); });
 </script>
 
 <style scoped>
-.auction-detail-page { padding-top: 100px; padding-bottom: 100px; }
+.auction-detail-page { padding-top: 80px; padding-bottom: 60px; }
 
 .detail-grid {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
-  gap: 80px;
+  gap: 40px;
   align-items: start;
 }
 
 .main-img {
   position: relative;
-  border-radius: 30px;
+  border-radius: 24px;
   overflow: hidden;
   box-shadow: var(--shadow-premium);
-  aspect-ratio: 1/1;
+  aspect-ratio: 4/3;
 }
 
 .main-img img { width: 100%; height: 100%; object-fit: cover; }
@@ -315,26 +315,26 @@ onUnmounted(() => { if (timerInterval) clearInterval(timerInterval); });
   gap: 10px;
   color: var(--accent-primary);
   font-weight: 700;
-  margin-bottom: 30px;
+  margin-bottom: 15px;
   text-transform: uppercase;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   letter-spacing: 1.5px;
 }
 
 .a-title {
   font-family: var(--font-serif);
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  line-height: 1;
-  margin-bottom: 20px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+  margin-bottom: 15px;
 }
 
 .social-meta {
   display: flex;
   align-items: center;
-  gap: 25px;
-  margin-bottom: 40px;
+  gap: 20px;
+  margin-bottom: 25px;
   color: var(--text-dim);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .meta-item {
@@ -399,22 +399,22 @@ onUnmounted(() => { if (timerInterval) clearInterval(timerInterval); });
 .current-bid, .days-left {
   flex: 1;
   background: var(--bg-accent);
-  padding: 30px;
+  padding: 20px;
 }
 
 .current-bid { background: var(--bg-secondary); }
 
 .label {
   display: block;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
   color: var(--text-dim);
   letter-spacing: 2px;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
 }
 
-.price { font-size: 2.5rem; font-weight: 800; color: var(--accent-primary); line-height: 1; }
-.price small { font-size: 1.2rem; opacity: 0.6; }
+.price { font-size: 2rem; font-weight: 800; color: var(--accent-primary); line-height: 1; }
+.price small { font-size: 1rem; opacity: 0.6; }
 
 .bidder {
   margin-top: 10px;
@@ -430,14 +430,14 @@ onUnmounted(() => { if (timerInterval) clearInterval(timerInterval); });
 
 .bid-card-premium {
   background: var(--gradient-primary);
-  padding: 40px;
-  border-radius: 30px;
+  padding: 25px;
+  border-radius: 20px;
   color: #fff;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 }
 
-.card-header h3 { font-size: 1.8rem; margin-bottom: 8px; }
-.card-header p { opacity: 0.8; font-size: 0.9rem; margin-bottom: 30px; }
+.card-header h3 { font-size: 1.5rem; margin-bottom: 5px; }
+.card-header p { opacity: 0.8; font-size: 0.85rem; margin-bottom: 20px; }
 
 .bid-form-styled { display: flex; flex-direction: column; gap: 20px; }
 

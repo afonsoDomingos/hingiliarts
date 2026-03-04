@@ -2,15 +2,19 @@
   <div class="auctions-page">
     <Navbar />
     
-    <section class="auctions-hero section bg-darker py-4">
-      <div class="container text-center reveal">
-        <span class="sub-title">Exclusividade</span>
-        <h2 class="section-title mb-2">Leilões de <span class="highlight">Obras de Arte</span></h2>
-        <p class="section-desc mb-3">Dispute peças únicas da Hingili Arts. Cada licitação aproxima-o de uma obra original.</p>
-        <div class="artist-cta mb-3">
-          <router-link to="/auctions/submit" class="btn btn-outline small-btn">É um Artista? Submeta a sua Obra</router-link>
+    <section class="auctions-header section">
+      <div class="container container-flex">
+        <div class="header-content reveal">
+          <span class="sub-title">Exclusividade</span>
+          <h1 class="comp-title">Leilões de <span class="highlight-linear">Arte</span></h1>
+          <p class="comp-desc">Dispute peças únicas da <span class="text-white">Hingili Arts</span>. Cada licitação aproxima-o de uma obra original.</p>
         </div>
-        <div class="divider align-center"></div>
+        <div class="header-actions reveal">
+          <router-link to="/auctions/submit" class="artist-badge">
+            <i class="fa-solid fa-palette"></i>
+            <span>É um Artista? <strong>Submeta aqui</strong></span>
+          </router-link>
+        </div>
       </div>
     </section>
 
@@ -101,37 +105,92 @@ onMounted(fetchAuctions);
 
 <style scoped>
 .auctions-page {
-  padding-top: 60px;
+  padding-top: 80px;
+  background: radial-gradient(circle at top right, rgba(229, 46, 113, 0.05), transparent 400px),
+              radial-gradient(circle at bottom left, rgba(255, 138, 0, 0.05), transparent 400px);
 }
 
-.auctions-hero {
-  padding: 40px 0 !important;
+.auctions-header {
+  padding: 40px 0 20px !important;
 }
 
-.section-desc {
-  max-width: 600px;
-  margin: 0 auto 15px;
-  color: var(--text-secondary);
+.container-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 30px;
+}
+
+.comp-title {
+  font-family: var(--font-serif);
+  font-size: 3rem;
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+
+.highlight-linear {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.comp-desc {
+  color: var(--text-dim);
+  max-width: 500px;
   font-size: 0.95rem;
+}
+
+.artist-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: rgba(255, 138, 0, 0.1);
+  border: 1px solid rgba(255, 138, 0, 0.2);
+  border-radius: 50px;
+  color: #fff;
+  font-size: 0.85rem;
+  transition: var(--transition);
+  text-decoration: none;
+}
+
+.artist-badge i {
+  color: var(--accent-primary);
+  font-size: 1.1rem;
+}
+
+.artist-badge:hover {
+  background: var(--gradient-glow);
+  border-color: transparent;
+  transform: translateX(-5px);
+}
+
+@media (max-width: 768px) {
+  .container-flex { flex-direction: column; align-items: flex-start; }
 }
 
 .a-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  gap: 25px;
+  margin-top: 20px;
 }
 
 .auction-card {
-  background: var(--bg-accent);
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--glass-border);
-  border-radius: 24px;
+  border-radius: 20px;
   overflow: hidden;
   transition: var(--transition);
+  display: flex;
+  flex-direction: column;
 }
 
 .auction-card:hover {
-  transform: translateY(-10px);
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.04);
   border-color: var(--accent-primary);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
 }
 
 .a-img-box {
@@ -167,32 +226,37 @@ onMounted(fetchAuctions);
 .a-badge.scheduled { background: #f59e0b; color: #fff; }
 
 .a-content {
-  padding: 15px;
+  padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .a-title {
   font-family: var(--font-serif);
-  font-size: 1.1rem;
-  margin-bottom: 15px;
+  font-size: 1.15rem;
+  margin-bottom: 12px;
   text-transform: uppercase;
+  letter-spacing: 1px;
   color: #fff;
 }
 
 .a-price-box {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
-  padding: 15px;
-  background: var(--glass);
+  padding: 12px 15px;
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 12px;
+  border-left: 3px solid var(--accent-primary);
 }
 
 .p-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
   color: var(--text-dim);
   letter-spacing: 1px;
-  margin-bottom: 5px;
 }
 
 .p-value {

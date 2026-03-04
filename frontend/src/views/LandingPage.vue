@@ -3,7 +3,7 @@
     <Navbar />
     <Hero />
     <About class="reveal" />
-    <MissionVision />
+    <MissionVision class="reveal" />
     
     <!-- Highlights -->
     <section class="highlights reveal">
@@ -20,6 +20,7 @@
 
     <Services class="reveal" />
     <Portfolio class="reveal" />
+    <VisitorMural />
 
     <!-- Process -->
     <section class="process section" id="process">
@@ -87,6 +88,7 @@ import About from '../components/About.vue';
 import MissionVision from '../components/MissionVision.vue';
 import Services from '../components/Services.vue';
 import Portfolio from '../components/Portfolio.vue';
+import VisitorMural from '../components/VisitorMural.vue';
 import Footer from '../components/Footer.vue';
 
 const showScrollTop = ref(false);

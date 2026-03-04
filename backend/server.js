@@ -15,6 +15,7 @@ const Project = require('./models/Project');
 const Message = require('./models/Message');
 const User = require('./models/User');
 const Auction = require('./models/Auction');
+const VisitorStamp = require('./models/VisitorStamp');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -242,6 +243,34 @@ app.post('/api/contact', async (req, res) => {
         }
 
         res.status(201).json({ success: true, message: 'Mensagem enviada com sucesso!' });
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+// --- Visitor Mural Routes ---
+
+app.get('/api/stamps', async (req, res) => {
+    try {
+        const stamps = await VisitorStamp.find().sort({ createdAt: -1 }).limit(50);
+        res.json(stamps);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.post('/api/stamps', async (req, res) => {
+    try {
+        const { name } = req.body;
+        if (!name) return res.status(400).json({ message: 'Nome é obrigatório' });
+
+        const newStamp = new VisitorStamp({
+            name,
+            styleIndex: Math.floor(Math.random() * 12)
+        });
+
+        await newStamp.save();
+        res.status(201).json(newStamp);
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
