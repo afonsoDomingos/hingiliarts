@@ -39,11 +39,12 @@ const isScrolled = ref(false);
 const isMenuActive = ref(false);
 
 const navLinks = [
-  { text: 'Início', href: '#home' },
-  { text: 'Sobre', href: '#about' },
-  { text: 'Serviços', href: '#services' },
-  { text: 'Portfólio', href: '#portfolio' },
-  { text: 'Contactos', href: '#contact' }
+  { text: 'Início', href: '/' },
+  { text: 'Sobre', href: '/#about' },
+  { text: 'Serviços', href: '/#services' },
+  { text: 'Portfólio', href: '/#portfolio' },
+  { text: 'Leilões', href: '/auctions' },
+  { text: 'Contactos', href: '/#contact' }
 ];
 
 const toggleMenu = () => {

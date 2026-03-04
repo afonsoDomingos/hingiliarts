@@ -21,6 +21,9 @@
           <i class="fa-solid fa-envelope"></i> <span>Mensagens</span>
           <span v-if="messages.length > 0" class="badge">{{ messages.length }}</span>
         </button>
+        <button @click="activeTab = 'auctions'" :class="{ active: activeTab === 'auctions' }">
+          <i class="fa-solid fa-gavel"></i> <span>Leilões</span>
+        </button>
       </nav>
       <div class="sidebar-footer">
         <p class="admin-user"><i class="fa-solid fa-user"></i> <span>{{ adminUser?.name || 'Admin' }}</span></p>
@@ -33,13 +36,16 @@
     <main class="content">
       <header class="content-header">
         <div>
-          <h1>{{ activeTab === 'projects' ? 'Gerir Portfólio' : 'Mensagens Recebidas' }}</h1>
+          <h1>{{ activeTab === 'projects' ? 'Gerir Portfólio' : activeTab === 'messages' ? 'Mensagens Recebidas' : 'Gerir Leilões' }}</h1>
           <p class="sub-header">
-            {{ activeTab === 'projects' ? `${projects.length} projeto(s)` : `${messages.length} mensagem(ns)` }}
+            {{ activeTab === 'projects' ? `${projects.length} projeto(s)` : activeTab === 'messages' ? `${messages.length} mensagem(ns)` : `${auctions.length} leilão(ões)` }}
           </p>
         </div>
         <button v-if="activeTab === 'projects'" @click="openModal()" class="btn btn-primary">
           <i class="fa-solid fa-plus"></i> Novo Projeto
+        </button>
+        <button v-if="activeTab === 'auctions'" @click="openAuctionModal()" class="btn btn-primary">
+          <i class="fa-solid fa-plus"></i> Novo Leilão
         </button>
       </header>
 
@@ -76,7 +82,7 @@
         </div>
       </section>
 
-      <section v-else class="dashboard-section">
+      <section v-else-if="activeTab === 'messages'" class="dashboard-section">
         <div v-if="messages.length === 0" class="empty-state">
           <i class="fa-solid fa-envelope-open"></i>
           <p>Nenhuma mensagem recebida ainda.</p>
@@ -91,6 +97,30 @@
               <span class="msg-date">{{ formatDate(msg.createdAt) }}</span>
             </div>
             <p class="msg-text">{{ msg.message }}</p>
+          </div>
+        </div>
+      </section>
+
+      <section v-else class="dashboard-section">
+        <div v-if="auctions.length === 0" class="empty-state">
+          <i class="fa-solid fa-gavel"></i>
+          <p>Nenhum leilão em curso. Começa por criar um!</p>
+        </div>
+        <div class="projects-admin-grid" v-else>
+          <div v-for="auction in auctions" :key="auction._id" class="project-admin-card">
+            <div class="card-img-wrap">
+              <img :src="auction.imageUrl" :alt="auction.title">
+              <span class="img-count" :class="auction.status">{{ auction.status }}</span>
+            </div>
+            <div class="card-info">
+              <h3>{{ auction.title }}</h3>
+              <p class="price-info">Preço Actual: <strong>{{ formatCurrency(auction.currentPrice) }} MT</strong></p>
+              <div class="card-actions">
+                <button @click="confirmDeleteAuction(auction._id)" class="btn-action btn-delete" title="Eliminar">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -149,6 +179,41 @@
         </form>
       </div>
     </div>
+    <!-- Modal Novo Leilão -->
+    <div v-if="showAuctionModal" class="modal-overlay" @click.self="showAuctionModal = false">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2>Novo Leilão</h2>
+          <button class="modal-close" @click="showAuctionModal = false"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form @submit.prevent="saveAuction" class="project-form">
+          <div class="form-group">
+            <label>Título da Obra *</label>
+            <input v-model="auctionData.title" type="text" placeholder="Ex: Retrato de Verão" required>
+          </div>
+          <div class="form-group">
+            <label>Preço Inicial (MT) *</label>
+            <input v-model.number="auctionData.startingPrice" type="number" required>
+          </div>
+          <div class="form-group">
+            <label>Data de Término *</label>
+            <input v-model="auctionData.endTime" type="datetime-local" required>
+          </div>
+          <div class="form-group">
+            <label>Descrição</label>
+            <textarea v-model="auctionData.description" rows="2"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Imagem da Obra *</label>
+            <input type="file" @change="e => selectedAuctionFile = e.target.files[0]" accept="image/*" required>
+          </div>
+          <div class="modal-actions">
+            <button type="button" @click="showAuctionModal = false" class="btn btn-secondary">Cancelar</button>
+            <button type="submit" class="btn btn-primary" :disabled="isSaving">Criar Leilão</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -162,7 +227,9 @@ const router = useRouter();
 const activeTab = ref('projects');
 const projects = ref([]);
 const messages = ref([]);
+const auctions = ref([]);
 const showModal = ref(false);
+const showAuctionModal = ref(false);
 const isSaving = ref(false);
 const isLoading = ref(false);
 const isEditing = ref(false);
@@ -173,7 +240,9 @@ const adminUser = ref(JSON.parse(localStorage.getItem('adminUser') || 'null'));
 const notification = ref({ show: false, message: '', type: 'success' });
 
 const formData = ref({ title: '', category: '', description: '' });
+const auctionData = ref({ title: '', description: '', startingPrice: 0, endTime: '' });
 const selectedFiles = ref([]);
+const selectedAuctionFile = ref(null);
 const fileInput = ref(null);
 
 const api = axios.create({
@@ -198,18 +267,22 @@ const formatDate = (date) => new Date(date).toLocaleDateString();
 const fetchData = async () => {
   isLoading.value = true;
   try {
-    const [pRes, mRes] = await Promise.all([
+    const [pRes, mRes, aRes] = await Promise.all([
       api.get('/portfolio'),
-      api.get('/admin/messages')
+      api.get('/admin/messages'),
+      api.get('/auctions')
     ]);
     projects.value = pRes.data;
     messages.value = mRes.data;
+    auctions.value = aRes.data;
   } catch (err) {
     if (err.response?.status === 401) handleLogout();
   } finally {
     isLoading.value = false;
   }
 };
+
+const formatCurrency = (val) => new Intl.NumberFormat('pt-MZ').format(val);
 
 const handleFileChange = (e) => {
   selectedFiles.value = Array.from(e.target.files);
@@ -222,6 +295,49 @@ const openModal = () => {
   selectedFiles.value = [];
   saveError.value = '';
   showModal.value = true;
+};
+
+const openAuctionModal = () => {
+  auctionData.value = { title: '', description: '', startingPrice: 0, endTime: '' };
+  selectedAuctionFile.value = null;
+  showAuctionModal.value = true;
+};
+
+const saveAuction = async () => {
+  isSaving.value = true;
+  const fd = new FormData();
+  fd.append('title', auctionData.value.title);
+  fd.append('description', auctionData.value.description);
+  fd.append('startingPrice', auctionData.value.startingPrice);
+  fd.append('endTime', auctionData.value.endTime);
+  if (selectedAuctionFile.value) fd.append('image', selectedAuctionFile.value);
+
+  try {
+    await api.post('/admin/auctions', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+    showToast('Leilão criado com sucesso!');
+    showAuctionModal.value = false;
+    await fetchData();
+  } catch (err) {
+    showToast('Erro ao criar leilão.', 'error');
+  } finally {
+    isSaving.value = false;
+  }
+};
+
+const confirmDeleteAuction = (id) => {
+  if (confirm('Queres mesmo eliminar este leilão?')) {
+    deleteAuction(id);
+  }
+};
+
+const deleteAuction = async (id) => {
+  try {
+    await api.delete(`/admin/auctions/${id}`);
+    showToast('Leilão eliminado.');
+    await fetchData();
+  } catch (err) {
+    showToast('Erro ao eliminar.', 'error');
+  }
 };
 
 const editProject = (project) => {

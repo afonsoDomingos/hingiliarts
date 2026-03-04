@@ -14,6 +14,7 @@ require('dotenv').config();
 const Project = require('./models/Project');
 const Message = require('./models/Message');
 const User = require('./models/User');
+const Auction = require('./models/Auction');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -104,6 +105,62 @@ app.get('/api/portfolio', async (req, res) => {
     try {
         const projects = await Project.find().sort({ createdAt: -1 });
         res.json(projects);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// --- Auction Routes ---
+
+// Public: Get All Auctions
+app.get('/api/auctions', async (req, res) => {
+    try {
+        const auctions = await Auction.find({ status: { $ne: 'ended' } }).sort({ endTime: 1 });
+        res.json(auctions);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Public: Get Single Auction
+app.get('/api/auctions/:id', async (req, res) => {
+    try {
+        const auction = await Auction.findById(req.params.id);
+        if (!auction) return res.status(404).json({ message: 'Leilão não encontrado' });
+        res.json(auction);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Public: Place a Bid
+app.post('/api/auctions/:id/bid', async (req, res) => {
+    const { bidderName, email, amount } = req.body;
+    try {
+        const auction = await Auction.findById(req.params.id);
+        if (!auction) return res.status(404).json({ message: 'Leilão não encontrado' });
+
+        if (auction.status !== 'active') {
+            return res.status(400).json({ message: 'Este leilão não está ativo' });
+        }
+
+        if (new Date() > auction.endTime) {
+            auction.status = 'ended';
+            await auction.save();
+            return res.status(400).json({ message: 'Este leilão já terminou' });
+        }
+
+        const minBid = (auction.currentPrice || auction.startingPrice) + 1;
+        if (amount < minBid) {
+            return res.status(400).json({ message: `A licitação deve ser de pelo menos ${minBid} MT` });
+        }
+
+        auction.currentPrice = amount;
+        auction.highestBidder = { name: bidderName, email };
+        auction.bids.push({ bidderName, amount, timestamp: new Date() });
+
+        await auction.save();
+        res.json(auction);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -239,6 +296,39 @@ app.get('/api/admin/messages', protect, async (req, res) => {
     try {
         const messages = await Message.find().sort({ createdAt: -1 });
         res.json(messages);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Admin: Auction Management
+app.post('/api/admin/auctions', protect, upload.single('image'), async (req, res) => {
+    try {
+        const { title, description, startingPrice, endTime } = req.body;
+        const imageUrl = req.file ? req.file.path : '';
+
+        if (!imageUrl) return res.status(400).json({ message: 'Imagem é obrigatória' });
+
+        const newAuction = new Auction({
+            title,
+            description,
+            startingPrice,
+            currentPrice: startingPrice,
+            endTime,
+            imageUrl
+        });
+
+        await newAuction.save();
+        res.status(201).json(newAuction);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+app.delete('/api/admin/auctions/:id', protect, async (req, res) => {
+    try {
+        await Auction.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Leilão removido' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

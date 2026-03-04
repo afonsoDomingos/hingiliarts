@@ -18,6 +18,16 @@ const routes = [
         name: 'admin-dashboard',
         component: () => import('../views/admin/Dashboard.vue'),
         meta: { requiresAuth: true }
+    },
+    {
+        path: '/auctions',
+        name: 'auctions',
+        component: () => import('../views/Auctions.vue')
+    },
+    {
+        path: '/auctions/:id',
+        name: 'auction-detail',
+        component: () => import('../views/AuctionDetail.vue')
     }
 ];
 
