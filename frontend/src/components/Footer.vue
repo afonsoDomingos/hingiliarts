@@ -40,7 +40,7 @@
     </div>
     <div class="footer-bottom">
       <div class="container footer-bottom-content">
-        <p>&copy; 2026 Hingili Arts Lda. Todos os direitos reservados. Design e Desenvolvimento Vibe <a href="https://linkedin.com/in/afonso-domingos-6b59361a5/" target="_blank" style="color: #ff8a00; text-decoration: none;">Afonso Domingos</a>.</p>
+        <p>&copy; 2026 Hingili Arts Lda. Todos os direitos reservados. Design e Desenvolvimento Vibe <a href="https://linkedin.com/in/afonso-domingos-6b59361a5/" target="_blank" style="color: var(--accent-primary); text-decoration: none;">Afonso Domingos</a>.</p>
         <router-link to="/admin/login" class="admin-link-subtle">Acesso Restrito</router-link>
       </div>
     </div>
@@ -101,7 +101,7 @@ const submitForm = async () => {
 }
 
 .admin-link-subtle:hover {
-  color: #ff8a00;
+  color: var(--accent-primary);
 }
 
 @media (max-width: 768px) {

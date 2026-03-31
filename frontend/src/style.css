@@ -10,10 +10,12 @@
     --text-secondary: #a1a1aa;
     --text-dim: #71717a;
 
-    --accent-primary: #ff8a00;
-    --accent-secondary: #e52e71;
-    --gradient-primary: linear-gradient(135deg, #ff8a00, #e52e71);
-    --gradient-glow: linear-gradient(135deg, rgba(255, 138, 0, 0.3), rgba(229, 46, 113, 0.3));
+    --accent-primary: #3b82f6;
+    /* Blue */
+    --accent-secondary: #0ea5e9;
+    /* Cyan-Blue */
+    --gradient-primary: linear-gradient(135deg, #3b82f6, #0ea5e9);
+    --gradient-glow: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(14, 165, 233, 0.3));
 
     --font-sans: 'Outfit', sans-serif;
     --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.4);
@@ -230,7 +232,7 @@ img {
     left: 0;
     width: 0%;
     height: 2px;
-    background: #ff8a00;
+    background: var(--accent-primary);
     transition: var(--transition);
 }
 
@@ -373,8 +375,8 @@ img {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(255, 138, 0, 0.1), rgba(229, 46, 113, 0.1));
-    color: #ff8a00;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(14, 165, 233, 0.1));
+    color: var(--accent-primary);
     font-size: 2rem;
     transition: var(--transition);
 }
@@ -436,7 +438,7 @@ img {
 
 .s-icon {
     font-size: 2.5rem;
-    color: #ff8a00;
+    color: var(--accent-primary);
     margin-bottom: 20px;
     position: relative;
     z-index: 1;
@@ -478,9 +480,9 @@ img {
 
 .filter-btn:hover,
 .filter-btn.active {
-    background: #ff8a00;
-    border-color: #ff8a00;
-    box-shadow: 0 4px 15px rgba(255, 138, 0, 0.3);
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
 }
 
 .portfolio-grid {
@@ -536,7 +538,7 @@ img {
 }
 
 .p-cat {
-    color: #ff8a00;
+    color: var(--accent-primary);
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -621,7 +623,7 @@ img {
 
 .client-logo:hover {
     color: #fff;
-    border-color: #ff8a00;
+    border-color: var(--accent-primary);
 }
 
 /* ====== CTA ====== */
@@ -682,7 +684,7 @@ img {
 }
 
 .socials a:hover {
-    background: #ff8a00;
+    background: var(--accent-primary);
     transform: translateY(-3px);
 }
 
@@ -695,7 +697,7 @@ img {
 }
 
 .contact-list i {
-    color: #ff8a00;
+    color: var(--accent-primary);
 }
 
 .contact-form {
@@ -719,7 +721,7 @@ img {
 .contact-form input:focus,
 .contact-form textarea:focus {
     outline: none;
-    border-color: #ff8a00;
+    border-color: var(--accent-primary);
 }
 
 .footer-bottom {
@@ -811,7 +813,7 @@ img {
 
 .float-auction:hover {
     transform: translateY(-5px) scale(1.1);
-    box-shadow: 0 15px 35px rgba(255, 138, 0, 0.4);
+    box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
 }
 
 @keyframes pulse-glow {

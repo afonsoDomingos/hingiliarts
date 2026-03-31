@@ -99,14 +99,14 @@ const formatDate = (date) => {
 
 const getStampStyle = (stamp) => {
   const styles = [
-    { font: "'Playfair Display', serif", color: '#ff8a00', rotate: '-5deg', scale: 1 },
-    { font: "'Outfit', sans-serif", color: '#e52e71', rotate: '3deg', scale: 1.1 },
+    { font: "'Playfair Display', serif", color: '#3b82f6', rotate: '-5deg', scale: 1 },
+    { font: "'Outfit', sans-serif", color: '#0ea5e9', rotate: '3deg', scale: 1.1 },
     { font: "cursive", color: '#fff', rotate: '-2deg', scale: 0.9 },
-    { font: "'Outfit', sans-serif", color: '#ff8a00', rotate: '4deg', scale: 1.05 },
+    { font: "'Outfit', sans-serif", color: '#3b82f6', rotate: '4deg', scale: 1.05 },
     { font: "serif", color: '#a1a1aa', rotate: '-4deg', scale: 0.95 },
     { font: "'Playfair Display', serif", color: '#fff', rotate: '2deg', scale: 1.15 },
-    { font: "sans-serif", color: '#e52e71', rotate: '-3deg', scale: 1 },
-    { font: "cursive", color: '#ff8a00', rotate: '5deg', scale: 1.02 }
+    { font: "sans-serif", color: '#0ea5e9', rotate: '-3deg', scale: 1 },
+    { font: "cursive", color: '#3b82f6', rotate: '5deg', scale: 1.02 }
   ];
   
   const style = styles[stamp.styleIndex % styles.length];

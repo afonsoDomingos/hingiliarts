@@ -95,7 +95,7 @@ const handleLogin = async () => {
 
 .form-group input:focus {
   outline: none;
-  border-color: #ff8a00;
+  border-color: var(--accent-primary);
 }
 
 .error-msg {
