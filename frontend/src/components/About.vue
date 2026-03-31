@@ -86,18 +86,26 @@
   z-index: 1;
 }
 
+/* Sobrescrita para o azul da essência para evitar o ruído do azul escuro */
+.highlight {
+  background: linear-gradient(135deg, #0284c7, #0ea5e9) !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
 .experience-badge {
   position: absolute;
   bottom: 40px;
   right: -20px;
-  background: var(--gradient-primary);
+  background: linear-gradient(135deg, #0284c7, #0ea5e9);
   padding: 24px;
   border-radius: 16px;
   color: #fff;
   display: flex;
   align-items: center;
   gap: 15px;
-  box-shadow: 0 15px 30px rgba(229, 46, 113, 0.3);
+  box-shadow: 0 15px 30px rgba(2, 132, 199, 0.3);
   z-index: 3;
 }
 
