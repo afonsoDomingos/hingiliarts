@@ -57,7 +57,7 @@ const services = [
 
 .service-card:hover {
   transform: translateY(-10px);
-  border-color: var(--accent-primary);
+  border-color: var(--accent-essence);
   background: var(--bg-secondary);
 }
 
@@ -70,7 +70,7 @@ const services = [
   align-items: center;
   justify-content: center;
   font-size: 2rem;
-  color: var(--accent-primary);
+  color: var(--accent-essence);
   margin-bottom: 30px;
   position: relative;
   z-index: 2;
@@ -80,7 +80,7 @@ const services = [
 .icon-glow {
   position: absolute;
   inset: -10px;
-  background: var(--gradient-glow);
+  background: var(--essence-glow);
   filter: blur(15px);
   opacity: 0;
   transition: var(--transition);
@@ -92,7 +92,7 @@ const services = [
 }
 
 .service-card:hover .s-icon-box {
-  background: var(--gradient-primary);
+  background: var(--gradient-essence);
   color: #fff;
   transform: scale(1.1);
 }
@@ -123,7 +123,7 @@ const services = [
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--accent-primary);
+  color: var(--accent-essence);
   display: flex;
   align-items: center;
   gap: 10px;

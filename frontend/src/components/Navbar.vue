@@ -129,7 +129,7 @@ onUnmounted(() => {
   left: 0;
   width: 0;
   height: 2px;
-  background: var(--gradient-primary);
+  background: var(--gradient-essence);
   transition: var(--transition);
 }
 

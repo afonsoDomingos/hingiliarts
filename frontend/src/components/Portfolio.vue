@@ -169,10 +169,10 @@ onMounted(() => {
 
 .filter-btn:hover,
 .filter-btn.active {
-  background: var(--gradient-primary);
+  background: var(--gradient-essence);
   color: #fff;
   border-color: transparent;
-  box-shadow: 0 10px 20px rgba(229, 46, 113, 0.2);
+  box-shadow: 0 10px 20px rgba(2, 132, 199, 0.2);
 }
 
 .portfolio-grid {
@@ -224,7 +224,7 @@ onMounted(() => {
 }
 
 .p-category {
-  color: var(--accent-primary);
+  color: var(--accent-essence);
   font-size: 0.75rem;
   font-weight: 800;
   text-transform: uppercase;

@@ -146,7 +146,7 @@
   display: block;
   font-size: 2rem;
   font-weight: 800;
-  color: #fff;
+  color: var(--accent-essence);
   margin-bottom: 5px;
   font-family: var(--font-serif);
 }
