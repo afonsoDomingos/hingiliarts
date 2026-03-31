@@ -5,7 +5,7 @@
         <div class="footer-logo mb-4">
           <img src="/assets/img/logo.png" alt="Hingili Arts Logo" class="footer-logo-img">
         </div>
-        <p>Especializada em arte mural, pintura publicitária e projetos artísticos personalizados. Moçambique.</p>
+        <p>Especializada em artes plásticas, pintura mural, pintura publicitária, artesanato e design de espaços. Moçambique.</p>
         <div class="socials">
           <a href="https://web.facebook.com/Xiwozramati" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
           <a href="#"><i class="fa-brands fa-instagram"></i></a>

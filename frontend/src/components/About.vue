@@ -22,10 +22,10 @@
           <div class="divider"></div>
           
           <p class="about-text">
-            A <strong>Hingili Arts</strong> nasceu do desejo de transformar paredes cinzentas em narrativas visuais vibrantes. Somos uma empresa moçambicana especializada em arte mural, sinalização publicitária e design de espaços, unindo a criatividade artística à precisão técnica.
+            A <strong>Hingili Arts</strong> nasceu do desejo de transformar <strong>ideas</strong> em narrativas visuais vibrantes. Somos uma empresa moçambicana especializada em, artes plásticas, pintura mural, pintura publicitária, artesanato e design de espaços, unindo a criatividade artística à precisão técnica.
           </p>
           <p class="about-text">
-            Acreditamos que cada espaço tem o potencial de inspirar. Por isso, trabalhamos de mãos dadas com os nossos clientes para garantir que a identidade da marca seja capturada com perfeição.
+            Acreditamos que cada espaço, cada arte, tem o potencial de inspirar. Por isso, trabalhamos de mãos dadas com os nossos clientes para garantir que a identidade da marca seja capturada com perfeição.
           </p>
           
           <div class="stats-glass">
