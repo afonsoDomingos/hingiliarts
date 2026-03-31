@@ -3,7 +3,7 @@
     <div class="container footer-grid">
       <div class="footer-info">
         <div class="footer-logo mb-4">
-          <img src="/assets/img/logo.png" alt="Hingili Arts Logo" class="footer-logo-img">
+          <img src="/assets/img/logo-branco.png" alt="Hingili Arts Logo" class="footer-logo-img">
         </div>
         <p>Especializada em artes plásticas, pintura mural, pintura publicitária, artesanato e design de espaços. Moçambique.</p>
         <div class="socials">
