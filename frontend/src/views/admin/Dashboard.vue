@@ -502,7 +502,7 @@ onMounted(fetchData);
 .sidebar-nav button {
   width: 100%; text-align: left; padding: 15px 30px; background: transparent; border: none; color: #888; font-size: 1rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 15px;
 }
-.sidebar-nav button.active, .sidebar-nav button:hover { color: #fff; background: rgba(59, 130, 246, 0.1); border-left: 3px solid var(--accent-primary); }
+.sidebar-nav button.active, .sidebar-nav button:hover { color: #fff; background: rgba(255, 138, 0, 0.1); border-left: 3px solid var(--accent-primary); }
 .badge { background: var(--accent-primary); color: #fff; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; margin-left: auto; }
 .sidebar-footer { padding: 20px 30px; border-top: 1px solid rgba(255,255,255,0.05); }
 .admin-user { font-size: 0.85rem; color: #888; margin-bottom: 15px; }
@@ -517,7 +517,7 @@ onMounted(fetchData);
 /* Grid */
 .projects-admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; }
 .project-admin-card { background: #1a1a20; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.03); transition: 0.4s ease; }
-.project-admin-card:hover { transform: translateY(-5px); border-color: rgba(59, 130, 246, 0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.project-admin-card:hover { transform: translateY(-5px); border-color: rgba(255, 138, 0, 0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 .card-img-wrap { position: relative; height: 200px; }
 .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
 .img-count { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.6); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; backdrop-filter: blur(5px); }
