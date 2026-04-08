@@ -27,6 +27,9 @@
         <button @click="activeTab = 'admins'" :class="{ active: activeTab === 'admins' }">
           <i class="fa-solid fa-user-shield"></i> <span>Admins</span>
         </button>
+        <button @click="activeTab = 'mural'" :class="{ active: activeTab === 'mural' }">
+          <i class="fa-solid fa-note-sticky"></i> <span>Mural</span>
+        </button>
       </nav>
       <div class="sidebar-footer">
         <p class="admin-user"><i class="fa-solid fa-user"></i> <span>{{ adminUser?.name || 'Admin' }}</span></p>
@@ -39,9 +42,9 @@
     <main class="content">
       <header class="content-header">
         <div>
-          <h1>{{ activeTab === 'projects' ? 'Gerir Portfólio' : activeTab === 'messages' ? 'Mensagens Recebidas' : activeTab === 'auctions' ? 'Gerir Leilões' : 'Admins' }}</h1>
+          <h1>{{ activeTab === 'projects' ? 'Gerir Portfólio' : activeTab === 'messages' ? 'Mensagens Recebidas' : activeTab === 'auctions' ? 'Gerir Leilões' : activeTab === 'admins' ? 'Admins' : 'Mural de Visitantes' }}</h1>
           <p class="sub-header">
-            {{ activeTab === 'projects' ? `${projects.length} projeto(s)` : activeTab === 'messages' ? `${messages.length} mensagem(ns)` : activeTab === 'auctions' ? `${auctions.length} leilão(ões)` : `${users.length} administrador(es)` }}
+            {{ activeTab === 'projects' ? `${projects.length} projeto(s)` : activeTab === 'messages' ? `${messages.length} mensagem(ns)` : activeTab === 'auctions' ? `${auctions.length} leilão(ões)` : activeTab === 'admins' ? `${users.length} administrador(es)` : `${stampsAdmin.length} carimbo(s)` }}
           </p>
         </div>
         <button v-if="activeTab === 'projects'" @click="openModal()" class="btn btn-primary">
@@ -164,6 +167,26 @@
                   <i class="fa-solid fa-trash"></i>
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section v-else-if="activeTab === 'mural'" class="dashboard-section">
+        <div v-if="stampsAdmin.length === 0" class="empty-state">
+          <i class="fa-solid fa-note-sticky"></i>
+          <p>O mural está vazio.</p>
+        </div>
+        <div class="projects-admin-grid" v-else>
+          <div v-for="stamp in stampsAdmin" :key="stamp._id" class="project-admin-card" style="padding: 15px; border-left: 4px solid var(--accent-primary);">
+            <div class="card-info" style="padding: 0; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h3 style="margin: 0; font-size: 1rem;">{{ stamp.name }}</h3>
+                <span style="font-size: 0.75rem; color: #666;">{{ formatDate(stamp.createdAt) }}</span>
+              </div>
+              <button @click="confirmDeleteStamp(stamp._id)" class="btn-action btn-delete" title="Eliminar Carimbo">
+                <i class="fa-solid fa-trash"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -322,6 +345,7 @@ const projects = ref([]);
 const messages = ref([]);
 const auctions = ref([]);
 const users = ref([]);
+const stampsAdmin = ref([]);
 const showModal = ref(false);
 const showAuctionModal = ref(false);
 const showAdminModal = ref(false);
@@ -366,16 +390,18 @@ const formatDate = (date) => new Date(date).toLocaleDateString();
 const fetchData = async () => {
   isLoading.value = true;
   try {
-    const [pRes, mRes, aRes, uRes] = await Promise.all([
+    const [pRes, mRes, aRes, uRes, sRes] = await Promise.all([
       api.get('/portfolio'),
       api.get('/admin/messages'),
       api.get('/admin/auctions'),
-      api.get('/admin/users')
+      api.get('/admin/users'),
+      api.get('/admin/stamps')
     ]);
     projects.value = pRes.data;
     messages.value = mRes.data;
     auctions.value = aRes.data;
     users.value = uRes.data;
+    stampsAdmin.value = sRes.data;
   } catch (err) {
     if (err.response?.status === 401) handleLogout();
   } finally {
@@ -572,6 +598,22 @@ const deleteAdmin = async (id) => {
     await fetchData();
   } catch (err) {
     showToast(err.response?.data?.message || 'Erro ao remover.', 'error');
+  }
+};
+
+const confirmDeleteStamp = (id) => {
+  if (confirm('Queres mesmo remover este carimbo do mural?')) {
+    deleteStamp(id);
+  }
+};
+
+const deleteStamp = async (id) => {
+  try {
+    await api.delete(`/admin/stamps/${id}`);
+    showToast('Carimbo removido.');
+    await fetchData();
+  } catch (err) {
+    showToast('Erro ao remover carimbo.', 'error');
   }
 };
 

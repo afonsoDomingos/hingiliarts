@@ -501,6 +501,25 @@ app.delete('/api/admin/users/:id', protect, async (req, res) => {
     }
 });
 
+// Admin: Visitor Mural Management
+app.get('/api/admin/stamps', protect, async (req, res) => {
+    try {
+        const stamps = await VisitorStamp.find().sort({ createdAt: -1 });
+        res.json(stamps);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.delete('/api/admin/stamps/:id', protect, async (req, res) => {
+    try {
+        await VisitorStamp.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Carimbo removido com sucesso.' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT} 🚀`);
 });
