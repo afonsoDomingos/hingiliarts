@@ -9,11 +9,11 @@
       <form @submit.prevent="handleLogin">
         <div class="form-group mb-3">
           <label>Email</label>
-          <input v-model="email" type="email" required placeholder="admin@hingilearts.com">
+          <input v-model="email" type="email" required>
         </div>
         <div class="form-group mb-4">
           <label>Senha</label>
-          <input v-model="password" type="password" required placeholder="••••••••">
+          <input v-model="password" type="password" required>
         </div>
         
         <button type="submit" class="btn btn-primary w-100" :disabled="isLoading">

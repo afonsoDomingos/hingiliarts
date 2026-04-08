@@ -447,6 +447,58 @@ app.delete('/api/admin/auctions/:id', protect, async (req, res) => {
     }
 });
 
+// Admin: User/Admin Management
+app.get('/api/admin/users', protect, async (req, res) => {
+    try {
+        const users = await User.find().select('-password');
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.post('/api/admin/users', protect, async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+        const exists = await User.findOne({ email });
+        if (exists) return res.status(400).json({ message: 'Este email já está registado.' });
+        
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({ name, email, password: hashedPassword });
+        await newUser.save();
+        
+        res.status(201).json({ _id: newUser._id, name: newUser.name, email: newUser.email });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.put('/api/admin/users/:id/password', protect, async (req, res) => {
+    try {
+        const { newPassword } = req.body;
+        if (!newPassword || newPassword.length < 6) return res.status(400).json({ message: 'A senha deve ter pelo menos 6 caracteres.' });
+        
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await User.findByIdAndUpdate(req.params.id, { password: hashedPassword });
+        
+        res.json({ message: 'Senha atualizada com sucesso.' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.delete('/api/admin/users/:id', protect, async (req, res) => {
+    try {
+        if (req.params.id === req.userId) {
+            return res.status(400).json({ message: 'Não pode eliminar o seu próprio utilizador.' });
+        }
+        await User.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Administrador removido' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT} 🚀`);
 });

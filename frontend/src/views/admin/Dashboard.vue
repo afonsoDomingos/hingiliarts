@@ -24,6 +24,9 @@
         <button @click="activeTab = 'auctions'" :class="{ active: activeTab === 'auctions' }">
           <i class="fa-solid fa-gavel"></i> <span>Leilões</span>
         </button>
+        <button @click="activeTab = 'admins'" :class="{ active: activeTab === 'admins' }">
+          <i class="fa-solid fa-user-shield"></i> <span>Admins</span>
+        </button>
       </nav>
       <div class="sidebar-footer">
         <p class="admin-user"><i class="fa-solid fa-user"></i> <span>{{ adminUser?.name || 'Admin' }}</span></p>
@@ -36,9 +39,9 @@
     <main class="content">
       <header class="content-header">
         <div>
-          <h1>{{ activeTab === 'projects' ? 'Gerir Portfólio' : activeTab === 'messages' ? 'Mensagens Recebidas' : 'Gerir Leilões' }}</h1>
+          <h1>{{ activeTab === 'projects' ? 'Gerir Portfólio' : activeTab === 'messages' ? 'Mensagens Recebidas' : activeTab === 'auctions' ? 'Gerir Leilões' : 'Admins' }}</h1>
           <p class="sub-header">
-            {{ activeTab === 'projects' ? `${projects.length} projeto(s)` : activeTab === 'messages' ? `${messages.length} mensagem(ns)` : `${auctions.length} leilão(ões)` }}
+            {{ activeTab === 'projects' ? `${projects.length} projeto(s)` : activeTab === 'messages' ? `${messages.length} mensagem(ns)` : activeTab === 'auctions' ? `${auctions.length} leilão(ões)` : `${users.length} administrador(es)` }}
           </p>
         </div>
         <button v-if="activeTab === 'projects'" @click="openModal()" class="btn btn-primary">
@@ -46,6 +49,9 @@
         </button>
         <button v-if="activeTab === 'auctions'" @click="openAuctionModal()" class="btn btn-primary">
           <i class="fa-solid fa-plus"></i> Novo Leilão
+        </button>
+        <button v-if="activeTab === 'admins'" @click="openAdminModal()" class="btn btn-primary">
+          <i class="fa-solid fa-user-plus"></i> Novo Admin
         </button>
       </header>
 
@@ -142,6 +148,26 @@
           </div>
         </div>
       </section>
+
+      <section v-else-if="activeTab === 'admins'" class="dashboard-section">
+        <div class="projects-admin-grid">
+          <div v-for="user in users" :key="user._id" class="project-admin-card" style="padding: 20px;">
+            <div class="card-info" style="padding-top: 10px;">
+              <h3 style="margin-bottom: 2px;"><i class="fa-solid fa-user-shield" style="color: var(--accent-primary)"></i> {{ user.name }}</h3>
+              <p style="color: #888; font-size: 0.9rem; margin-bottom: 15px;">{{ user.email }}</p>
+              
+              <div class="card-actions">
+                <button @click="openPassModal(user._id)" class="btn-action btn-edit" title="Alterar Senha">
+                  <i class="fa-solid fa-key"></i>
+                </button>
+                <button v-if="user._id !== adminUser._id" @click="confirmDeleteAdmin(user._id)" class="btn-action btn-delete" title="Eliminar">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- Modal Novo/Editar Projeto -->
@@ -232,6 +258,55 @@
         </form>
       </div>
     </div>
+
+    <!-- Modal Novo Admin -->
+    <div v-if="showAdminModal" class="modal-overlay" @click.self="showAdminModal = false">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2>Novo Administrador</h2>
+          <button class="modal-close" @click="showAdminModal = false"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form @submit.prevent="saveAdmin" class="project-form">
+          <div class="form-group">
+            <label>Nome *</label>
+            <input v-model="adminData.name" type="text" required>
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input v-model="adminData.email" type="email" required>
+          </div>
+          <div class="form-group">
+            <label>Senha *</label>
+            <input v-model="adminData.password" type="password" required>
+          </div>
+          <p v-if="adminError" class="error-msg">{{ adminError }}</p>
+          <div class="modal-actions">
+            <button type="button" @click="showAdminModal = false" class="btn btn-secondary">Cancelar</button>
+            <button type="submit" class="btn btn-primary" :disabled="isSaving">Adicionar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Alterar Senha -->
+    <div v-if="showPassModal" class="modal-overlay" @click.self="showPassModal = false">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2>Alterar Senha</h2>
+          <button class="modal-close" @click="showPassModal = false"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form @submit.prevent="updatePassword" class="project-form">
+          <div class="form-group">
+            <label>Nova Senha *</label>
+            <input v-model="passData.newPassword" type="password" required minlength="6">
+          </div>
+          <div class="modal-actions">
+            <button type="button" @click="showPassModal = false" class="btn btn-secondary">Cancelar</button>
+            <button type="submit" class="btn btn-primary" :disabled="isSaving">Salvar Senha</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -246,8 +321,11 @@ const activeTab = ref('projects');
 const projects = ref([]);
 const messages = ref([]);
 const auctions = ref([]);
+const users = ref([]);
 const showModal = ref(false);
 const showAuctionModal = ref(false);
+const showAdminModal = ref(false);
+const showPassModal = ref(false);
 const isSaving = ref(false);
 const isLoading = ref(false);
 const isEditing = ref(false);
@@ -259,6 +337,9 @@ const notification = ref({ show: false, message: '', type: 'success' });
 
 const formData = ref({ title: '', category: '', description: '' });
 const auctionData = ref({ title: '', description: '', startingPrice: 0, endTime: '' });
+const adminData = ref({ name: '', email: '', password: '' });
+const passData = ref({ newPassword: '' });
+const adminError = ref('');
 const selectedFiles = ref([]);
 const selectedAuctionFile = ref(null);
 const fileInput = ref(null);
@@ -285,14 +366,16 @@ const formatDate = (date) => new Date(date).toLocaleDateString();
 const fetchData = async () => {
   isLoading.value = true;
   try {
-    const [pRes, mRes, aRes] = await Promise.all([
+    const [pRes, mRes, aRes, uRes] = await Promise.all([
       api.get('/portfolio'),
       api.get('/admin/messages'),
-      api.get('/admin/auctions')
+      api.get('/admin/auctions'),
+      api.get('/admin/users')
     ]);
     projects.value = pRes.data;
     messages.value = mRes.data;
     auctions.value = aRes.data;
+    users.value = uRes.data;
   } catch (err) {
     if (err.response?.status === 401) handleLogout();
   } finally {
@@ -432,6 +515,63 @@ const deleteProject = async (id) => {
     await fetchData();
   } catch (err) {
     showToast('Erro ao eliminar.', 'error');
+  }
+};
+
+const openAdminModal = () => {
+  adminData.value = { name: '', email: '', password: '' };
+  adminError.value = '';
+  showAdminModal.value = true;
+};
+
+const saveAdmin = async () => {
+  isSaving.value = true;
+  adminError.value = '';
+  try {
+    await api.post('/admin/users', adminData.value);
+    showToast('Administrador adicionado com sucesso!');
+    showAdminModal.value = false;
+    await fetchData();
+  } catch (err) {
+    adminError.value = err.response?.data?.message || 'Erro ao adicionar administrador.';
+    showToast('Erro ao criar admin.', 'error');
+  } finally {
+    isSaving.value = false;
+  }
+};
+
+const openPassModal = (id) => {
+  currentId.value = id;
+  passData.value = { newPassword: '' };
+  showPassModal.value = true;
+};
+
+const updatePassword = async () => {
+  isSaving.value = true;
+  try {
+    await api.put(`/admin/users/${currentId.value}/password`, passData.value);
+    showToast('Senha atualizada com sucesso!');
+    showPassModal.value = false;
+  } catch (err) {
+    showToast('Erro ao atualizar senha.', 'error');
+  } finally {
+    isSaving.value = false;
+  }
+};
+
+const confirmDeleteAdmin = (id) => {
+  if (confirm('Queres mesmo remover este administrador?')) {
+    deleteAdmin(id);
+  }
+};
+
+const deleteAdmin = async (id) => {
+  try {
+    await api.delete(`/admin/users/${id}`);
+    showToast('Administrador removido.');
+    await fetchData();
+  } catch (err) {
+    showToast(err.response?.data?.message || 'Erro ao remover.', 'error');
   }
 };
 
