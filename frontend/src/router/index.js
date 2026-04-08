@@ -51,4 +51,12 @@ router.beforeEach((to, from, next) => {
     }
 });
 
+// Recuperação automática de falhas de carregamento de módulos (acontece após novos deploys)
+router.onError((error, to) => {
+    if (error.message.includes('Failed to fetch dynamically imported module') || 
+        error.message.includes('Importing a module script failed')) {
+        window.location.href = to.fullPath;
+    }
+});
+
 export default router;
