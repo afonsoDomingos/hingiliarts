@@ -35,6 +35,8 @@ const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:4173',
     'https://hingiliarts.vercel.app',
+    'https://www.hingiliartes.com',
+    'https://hingiliartes.com',
     process.env.FRONTEND_URL,
 ].filter(Boolean);
 
