@@ -107,7 +107,7 @@
         </div>
       </section>
 
-      <section v-else class="dashboard-section">
+      <section v-else-if="activeTab === 'auctions'" class="dashboard-section">
         <div v-if="auctions.length === 0" class="empty-state">
           <i class="fa-solid fa-gavel"></i>
           <p>Nenhum leilão em curso. Começa por criar um!</p>
