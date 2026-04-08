@@ -294,16 +294,26 @@ app.post('/api/stamps', async (req, res) => {
 // Admin: Auth Login
 app.post('/api/admin/login', loginLimiter, async (req, res) => {
     const { email, password } = req.body;
+    console.log(`🔐 Tentativa de login recebida para: ${email}`);
+    
     try {
         const user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ message: 'Usuário não encontrado' });
+        if (!user) {
+            console.warn(`⚠️ Login falhou: Utilizador ${email} não encontrado.`);
+            return res.status(400).json({ message: 'Usuário não encontrado' });
+        }
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ message: 'Senha incorreta' });
+        if (!isMatch) {
+            console.warn(`⚠️ Login falhou: Senha incorreta para ${email}.`);
+            return res.status(400).json({ message: 'Senha incorreta' });
+        }
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        console.log(`✅ Login autorizado com sucesso para: ${email}`);
         res.json({ token, user: { name: user.name, email: user.email } });
     } catch (err) {
+        console.error(`❌ Erro interno no servidor durante o login:`, err.message);
         res.status(500).json({ message: err.message });
     }
 });

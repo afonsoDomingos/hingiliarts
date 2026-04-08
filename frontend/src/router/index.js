@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '../App.vue'; // This is a bit of a circular ref if we keep everything in App.vue, let's refactor App.vue later
-// Actually, let's define the routes properly
+import HomeView from '../App.vue';
+import Dashboard from '../views/admin/Dashboard.vue'; // Importação estática direta
 
 const routes = [
     {
@@ -16,7 +16,7 @@ const routes = [
     {
         path: '/admin/dashboard',
         name: 'admin-dashboard',
-        component: () => import('../views/admin/Dashboard.vue'),
+        component: Dashboard,
         meta: { requiresAuth: true }
     },
     {

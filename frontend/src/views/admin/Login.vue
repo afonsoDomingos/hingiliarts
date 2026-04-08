@@ -41,15 +41,24 @@ const isLoading = ref(false);
 const handleLogin = async () => {
   isLoading.value = true;
   error.value = '';
+  console.log('🚀 Iniciando tentativa de login para:', email.value);
+  
   try {
     const response = await axios.post(`${API_URL}/api/admin/login`, {
       email: email.value,
       password: password.value
     });
+    
+    console.log('✅ Login bem-sucedido! Recebido token.');
     localStorage.setItem('adminToken', response.data.token);
     localStorage.setItem('adminUser', JSON.stringify(response.data.user));
-    router.push('/admin/dashboard');
+    
+    console.log('📍 Redirecionando para o Dashboard...');
+    await router.push('/admin/dashboard');
+    console.log('✨ Navegação concluída.');
+    
   } catch (err) {
+    console.error('❌ Erro no Login:', err.response?.data?.message || err.message);
     error.value = err.response?.data?.message || 'Erro ao fazer login';
   } finally {
     isLoading.value = false;
