@@ -70,12 +70,6 @@
       <a href="https://wa.me/258844473620" target="_blank" class="float-btn float-whatsapp">
         <i class="fa-brands fa-whatsapp"></i>
       </a>
-      <button 
-        :class="['float-btn float-scroll-up', { 'show': showScrollTop }]" 
-        @click="scrollToTop"
-      >
-        <i class="fa-solid fa-arrow-up"></i>
-      </button>
     </div>
   </div>
 </template>
@@ -330,8 +324,12 @@ onUnmounted(() => {
 
 .floating-controls {
   position: fixed;
-  bottom: 0;
-  right: 0;
+  bottom: 20px;
+  right: 15px;
   z-index: 1500;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
 }
 </style>
