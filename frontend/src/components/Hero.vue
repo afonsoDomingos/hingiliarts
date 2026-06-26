@@ -143,10 +143,22 @@ onUnmounted(() => {
 
 @media (max-width: 600px) {
   .hero-btns {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
     width: 100%;
   }
-  
+
+  .hero-btns .btn {
+    padding: 11px 20px;
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+  }
+
   .hero-tag {
     font-size: 0.75rem;
     letter-spacing: 2px;
