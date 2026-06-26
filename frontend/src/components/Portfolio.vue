@@ -31,7 +31,12 @@
               <div class="p-view"><i class="fa-solid fa-expand"></i></div>
             </div>
             <div class="portfolio-info">
-              <span class="p-category">{{ categoryLabel(item.category) }}</span>
+              <div class="p-info-top">
+                <span class="p-category">{{ categoryLabel(item.category) }}</span>
+                <span class="p-views-badge" v-if="item.views">
+                  <i class="fa-solid fa-eye"></i> {{ item.views }}
+                </span>
+              </div>
               <h4 class="p-title">{{ item.title }}</h4>
               <p class="p-desc" v-if="item.description">
                 {{ getTruncatedDesc(item) }}
@@ -290,14 +295,34 @@ onMounted(() => {
   transition: var(--transition);
 }
 
+.p-info-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
 .p-category {
   color: var(--accent-essence);
   font-size: 0.75rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 2px;
-  margin-bottom: 10px;
   display: block;
+}
+
+.p-views-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--glass-border);
+  padding: 3px 9px;
+  border-radius: 50px;
+  white-space: nowrap;
 }
 
 .p-title {
