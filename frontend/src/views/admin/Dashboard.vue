@@ -221,8 +221,8 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Descrição</label>
-            <textarea v-model="formData.description" rows="2" placeholder="Breve descrição..."></textarea>
+            <label>Descrição <span style="color:#555;font-size:0.75rem;">(pode ser longa — o visitante verá um botão "Ler mais")</span></label>
+            <textarea v-model="formData.description" rows="6" placeholder="Descreve a obra em detalhe: contexto, técnica, materiais, dimensões, história..."></textarea>
           </div>
           
           <div class="form-group">
@@ -804,13 +804,14 @@ onMounted(fetchData);
 
 /* Modal */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(5px); }
-.modal-card { background: #1a1a20; padding: 40px; border-radius: 24px; width: 100%; max-width: 500px; border: 1px solid rgba(255,255,255,0.05); }
+.modal-card { background: #1a1a20; padding: 40px; border-radius: 24px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
 .modal-close { background: transparent; border: none; color: #555; font-size: 1.5rem; cursor: pointer; }
 .project-form { display: flex; flex-direction: column; gap: 20px; }
 .form-group label { font-size: 0.8rem; color: #888; margin-bottom: 8px; display: block; }
 .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 14px; background: #131317; border: 1px solid #333; border-radius: 12px; color: #fff; font-size: 1rem; }
-.form-group input:focus { border-color: var(--accent-primary); outline: none; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent-primary); outline: none; }
+.form-group textarea { resize: vertical; min-height: 120px; }
 .file-drop { border: 2px dashed #333; padding: 20px; text-align: center; border-radius: 12px; cursor: pointer; }
 .file-drop:hover { border-color: var(--accent-primary); }
 .edit-note { font-size: 0.8rem; color: #ffb700; background: rgba(255, 183, 0, 0.1); padding: 10px; border-radius: 8px; line-height: 1.4; }
