@@ -213,8 +213,24 @@ onMounted(fetchStamps);
 }
 
 @media (max-width: 768px) {
-  .stamp-form { flex-direction: column; border-radius: 20px; padding: 20px; }
-  .visitor-name { font-size: 1.4rem; }
-  .mural-wall { gap: 20px; }
+  .mural-container {
+    padding: 30px 15px;
+    border-radius: 20px;
+    margin-top: 30px;
+  }
+  .stamp-form {
+    flex-direction: column;
+    border-radius: 20px;
+    padding: 20px;
+  }
+  .visitor-name {
+    font-size: 1.2rem;
+  }
+  .visitor-stamp {
+    padding: 6px 12px;
+  }
+  .mural-wall {
+    gap: 12px 15px;
+  }
 }
 </style>
