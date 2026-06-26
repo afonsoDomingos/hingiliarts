@@ -28,11 +28,21 @@
           <div class="portfolio-card">
             <div class="portfolio-img-wrap">
               <img :src="item.images[0]" :alt="item.title">
+              <div class="p-view"><i class="fa-solid fa-expand"></i></div>
             </div>
             <div class="portfolio-info">
               <span class="p-category">{{ categoryLabel(item.category) }}</span>
               <h4 class="p-title">{{ item.title }}</h4>
-              <div class="p-view"><i class="fa-solid fa-expand"></i></div>
+              <p class="p-desc" v-if="item.description">
+                {{ getTruncatedDesc(item) }}
+                <span 
+                  v-if="isLongDesc(item)" 
+                  class="read-more-btn"
+                  @click.stop="toggleExpand(item._id || item.id, $event)"
+                >
+                  {{ expandedCards[item._id || item.id] ? ' Ler menos' : ' Ler mais' }}
+                </span>
+              </p>
             </div>
           </div>
         </div>
@@ -94,6 +104,26 @@ const currentImageIndex = ref(0);
 const lightboxTitle = ref('');
 const lightboxDescription = ref('');
 const lightboxViews = ref(0);
+
+const expandedCards = ref({});
+
+const toggleExpand = (id, event) => {
+  if (event) event.stopPropagation();
+  expandedCards.value[id] = !expandedCards.value[id];
+};
+
+const getTruncatedDesc = (item) => {
+  if (!item.description) return '';
+  const limit = 120;
+  if (item.description.length <= limit || expandedCards.value[item._id || item.id]) {
+    return item.description;
+  }
+  return item.description.slice(0, limit) + '...';
+};
+
+const isLongDesc = (item) => {
+  return item.description && item.description.length > 120;
+};
 
 const filters = [
   { label: 'Todos', value: 'all' },
@@ -211,14 +241,24 @@ onMounted(() => {
   border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
-  aspect-ratio: 4/5;
+  display: flex;
+  flex-direction: column;
   background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  transition: var(--transition);
+}
+
+.portfolio-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 138, 0, 0.3);
+  box-shadow: var(--shadow-premium);
 }
 
 .portfolio-img-wrap {
   width: 100%;
-  height: 100%;
-  transition: var(--transition);
+  height: 280px;
+  overflow: hidden;
+  position: relative;
 }
 
 .portfolio-img-wrap img {
@@ -233,19 +273,15 @@ onMounted(() => {
 }
 
 .portfolio-info {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent 60%);
+  position: relative;
+  background: rgba(26, 26, 32, 0.85);
+  backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  padding: 40px;
-  opacity: 0;
+  padding: 24px;
+  border-top: 1px solid var(--glass-border);
+  flex-grow: 1;
   transition: var(--transition);
-}
-
-.portfolio-card:hover .portfolio-info {
-  opacity: 1;
 }
 
 .p-category {
@@ -260,17 +296,37 @@ onMounted(() => {
 
 .p-title {
   font-family: var(--font-serif);
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   color: #fff;
   line-height: 1.2;
 }
 
-.p-view {
+.p-desc {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.read-more-btn {
+  color: var(--accent-essence);
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: 4px;
+  transition: color 0.3s;
+}
+
+.read-more-btn:hover {
+  color: var(--accent-primary);
+}
+
+.portfolio-img-wrap .p-view {
   position: absolute;
-  top: 30px;
-  right: 30px;
-  width: 50px;
-  height: 50px;
+  top: 20px;
+  right: 20px;
+  width: 45px;
+  height: 45px;
   background: var(--gradient-primary);
   border-radius: 50%;
   display: flex;
@@ -279,6 +335,7 @@ onMounted(() => {
   color: #fff;
   transform: scale(0);
   transition: var(--transition);
+  z-index: 10;
 }
 
 .portfolio-card:hover .p-view {
@@ -419,22 +476,24 @@ onMounted(() => {
     grid-template-columns: 1fr;
   }
 
+  .portfolio-img-wrap {
+    height: 240px;
+  }
+
   .portfolio-info {
-    opacity: 1 !important;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent 70%);
-    padding: 20px;
+    padding: 16px;
   }
 
   .p-title {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
   }
 
-  .p-view {
+  .portfolio-img-wrap .p-view {
     transform: scale(1);
     width: 40px;
     height: 40px;
-    top: 20px;
-    right: 20px;
+    top: 15px;
+    right: 15px;
   }
 
   .lb-info-wrap {
