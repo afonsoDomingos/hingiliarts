@@ -77,7 +77,12 @@
             </div>
             <div class="card-info">
               <h3>{{ project.title || 'Sem Título' }}</h3>
-              <span class="category-badge">{{ categoryLabel(project.category) }}</span>
+              <div class="card-meta">
+                <span class="category-badge">{{ categoryLabel(project.category) }}</span>
+                <span class="views-badge" title="Visualizações">
+                  <i class="fa-solid fa-eye"></i> {{ project.views || 0 }}
+                </span>
+              </div>
               <div class="card-actions">
                 <button @click="editProject(project)" class="btn-action btn-edit" title="Editar">
                   <i class="fa-solid fa-pen"></i>
@@ -706,6 +711,8 @@ onMounted(fetchData);
 .card-info { padding: 20px; }
 .card-info h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; color: #eee; }
 .category-badge { font-size: 0.75rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; }
+.card-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+.views-badge { font-size: 0.8rem; color: #888; display: flex; align-items: center; gap: 6px; }
 
 /* Status Badges */
 .status-badge {

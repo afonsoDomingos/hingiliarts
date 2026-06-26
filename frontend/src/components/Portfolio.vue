@@ -66,7 +66,13 @@
           </div>
           
           <div class="lightbox-details">
-            <h3 class="lb-title">{{ lightboxTitle }}</h3>
+            <div class="lb-info-wrap">
+              <h3 class="lb-title">{{ lightboxTitle }}</h3>
+              <p class="lb-desc" v-if="lightboxDescription">{{ lightboxDescription }}</p>
+              <div class="lb-views-count" v-if="lightboxViews !== undefined">
+                <i class="fa-solid fa-eye"></i> {{ lightboxViews }} visualizações
+              </div>
+            </div>
             <div class="lb-counter">{{ currentImageIndex + 1 }} / {{ currentAlbum.length }}</div>
           </div>
         </div>
@@ -86,6 +92,8 @@ const isLightboxActive = ref(false);
 const currentAlbum = ref([]);
 const currentImageIndex = ref(0);
 const lightboxTitle = ref('');
+const lightboxDescription = ref('');
+const lightboxViews = ref(0);
 
 const filters = [
   { label: 'Todos', value: 'all' },
@@ -113,8 +121,25 @@ const openLightbox = (item) => {
   currentAlbum.value = item.images;
   currentImageIndex.value = 0;
   lightboxTitle.value = item.title;
+  lightboxDescription.value = item.description || '';
+  lightboxViews.value = item.views || 0;
   isLightboxActive.value = true;
   document.body.style.overflow = 'hidden';
+  
+  incrementView(item._id || item.id);
+};
+
+const incrementView = async (id) => {
+  try {
+    await axios.post(`${API_URL}/api/portfolio/${id}/view`);
+    const project = portfolio.value.find(p => (p._id || p.id) === id);
+    if (project) {
+      project.views = (project.views || 0) + 1;
+      lightboxViews.value = project.views;
+    }
+  } catch (error) {
+    console.error('Falha ao registar visualização:', error);
+  }
 };
 
 const closeLightbox = () => {
@@ -354,10 +379,33 @@ onMounted(() => {
   padding-top: 20px;
 }
 
+.lb-info-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 80%;
+  text-align: left;
+}
+
 .lb-title {
   font-family: var(--font-serif);
   font-size: 2rem;
   color: #fff;
+}
+
+.lb-desc {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.lb-views-count {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  margin-top: 4px;
 }
 
 .lb-counter {
@@ -369,6 +417,36 @@ onMounted(() => {
 @media (max-width: 900px) {
   .portfolio-grid {
     grid-template-columns: 1fr;
+  }
+
+  .portfolio-info {
+    opacity: 1 !important;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent 70%);
+    padding: 20px;
+  }
+
+  .p-title {
+    font-size: 1.4rem;
+  }
+
+  .p-view {
+    transform: scale(1);
+    width: 40px;
+    height: 40px;
+    top: 20px;
+    right: 20px;
+  }
+
+  .lb-info-wrap {
+    max-width: 70%;
+  }
+
+  .lb-title {
+    font-size: 1.4rem;
+  }
+
+  .lb-desc {
+    font-size: 0.9rem;
   }
   
   .lb-nav {

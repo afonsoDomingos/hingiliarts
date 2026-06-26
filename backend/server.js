@@ -115,6 +115,16 @@ app.get('/api/portfolio', async (req, res) => {
     }
 });
 
+// Public: Increment Project Views
+app.post('/api/portfolio/:id/view', async (req, res) => {
+    try {
+        await Project.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // --- Auction Routes ---
 
 // Public: Get All Auctions (Only active/approved)
