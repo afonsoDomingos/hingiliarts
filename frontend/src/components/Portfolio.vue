@@ -230,6 +230,12 @@ onMounted(() => {
   box-shadow: 0 10px 20px rgba(2, 132, 199, 0.2);
 }
 
+.portfolio-item {
+  height: auto !important;
+  aspect-ratio: auto !important;
+  overflow: visible !important;
+}
+
 .portfolio-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
