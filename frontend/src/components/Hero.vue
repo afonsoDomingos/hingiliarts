@@ -11,7 +11,7 @@
     
     <div class="container hero-content">
       <div class="hero-tag reveal">Transformando o Comum em <span class="highlight">Extraordinário</span></div>
-      <h1 class="hero-title reveal">A Arte de <br><span class="highlight">Impactar</span> Espaços</h1>
+      <h1 class="hero-title reveal">Nossa Art, <br>Sua <span class="highlight">Realização</span></h1>
       <p class="hero-subtitle reveal">Do mural urbano à sinalização corporativa de luxo. Unimos a visão artística à execução técnica impecável.</p>
       
       <div class="hero-btns reveal">
