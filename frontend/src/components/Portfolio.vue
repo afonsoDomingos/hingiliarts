@@ -84,7 +84,7 @@
           <div class="lightbox-details">
             <div class="lb-info-wrap">
               <h3 class="lb-title">{{ lightboxTitle }}</h3>
-              <p class="lb-desc" v-if="lightboxDescription">{{ lightboxDescription }}</p>
+              <p class="lb-desc" v-if="lightboxDescription">{{ formatDescription(lightboxDescription) }}</p>
               <div class="lb-views-count" v-if="lightboxViews !== undefined">
                 <i class="fa-solid fa-eye"></i> {{ lightboxViews }} visualizações
               </div>
@@ -118,17 +118,24 @@ const toggleExpand = (id, event) => {
   expandedCards.value[id] = !expandedCards.value[id];
 };
 
+const formatDescription = (text) => {
+  if (!text) return '';
+  return text.replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+};
+
 const getTruncatedDesc = (item) => {
   if (!item.description) return '';
+  const formatted = formatDescription(item.description);
   const limit = 120;
-  if (item.description.length <= limit || expandedCards.value[item._id || item.id]) {
-    return item.description;
+  if (formatted.length <= limit || expandedCards.value[item._id || item.id]) {
+    return formatted;
   }
-  return item.description.slice(0, limit) + '...';
+  return formatted.slice(0, limit) + '...';
 };
 
 const isLongDesc = (item) => {
-  return item.description && item.description.length > 120;
+  if (!item.description) return false;
+  return formatDescription(item.description).length > 120;
 };
 
 const filters = [
