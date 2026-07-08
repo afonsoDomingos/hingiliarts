@@ -99,14 +99,14 @@ const formatDate = (date) => {
 
 const getStampStyle = (stamp) => {
   const styles = [
-    { font: "'Playfair Display', serif", color: '#3b82f6', rotate: '-5deg', scale: 1 },
-    { font: "'Outfit', sans-serif", color: '#0ea5e9', rotate: '3deg', scale: 1.1 },
-    { font: "cursive", color: '#fff', rotate: '-2deg', scale: 0.9 },
-    { font: "'Outfit', sans-serif", color: '#3b82f6', rotate: '4deg', scale: 1.05 },
-    { font: "serif", color: '#a1a1aa', rotate: '-4deg', scale: 0.95 },
-    { font: "'Playfair Display', serif", color: '#fff', rotate: '2deg', scale: 1.15 },
-    { font: "sans-serif", color: '#0ea5e9', rotate: '-3deg', scale: 1 },
-    { font: "cursive", color: '#3b82f6', rotate: '5deg', scale: 1.02 }
+    { font: "'Playfair Display', serif", color: '#ff8a00', rotate: '-4deg', scale: 0.95 },
+    { font: "'Outfit', sans-serif", color: '#0ea5e9', rotate: '3deg', scale: 1.05 },
+    { font: "cursive", color: '#e52e71', rotate: '-2deg', scale: 1 },
+    { font: "'Outfit', sans-serif", color: '#10b981', rotate: '4deg', scale: 1.02 },
+    { font: "'Playfair Display', serif", color: '#a855f7', rotate: '-3deg', scale: 0.98 },
+    { font: "cursive", color: '#f59e0b', rotate: '2deg', scale: 1.08 },
+    { font: "'Outfit', sans-serif", color: '#ec4899', rotate: '-5deg', scale: 1 },
+    { font: "'Playfair Display', serif", color: '#3b82f6', rotate: '4deg', scale: 1.04 }
   ];
   
   const style = styles[stamp.styleIndex % styles.length];
@@ -170,25 +170,31 @@ onMounted(fetchStamps);
 
 .visitor-stamp {
   position: relative;
-  padding: 10px 20px;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
   cursor: default;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .visitor-stamp:hover {
-  scale: 1.2 !important;
+  transform: scale(1.15) !important;
   z-index: 5;
-  filter: drop-shadow(0 0 15px currentColor);
+  border-color: currentColor;
+  box-shadow: 0 8px 25px currentColor;
+  filter: drop-shadow(0 0 8px currentColor);
 }
 
 .stamp-content {
   display: flex;
   flex-direction: column;
-  line-height: 1;
+  line-height: 1.1;
 }
 
 .visitor-name {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 800;
   white-space: nowrap;
 }

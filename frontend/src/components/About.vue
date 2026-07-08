@@ -191,8 +191,18 @@
   .years { font-size: 2rem; }
   
   .stats-glass {
-    grid-template-columns: 1fr;
-    gap: 30px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 20px 10px;
+  }
+  
+  .stat-num {
+    font-size: 1.5rem;
+  }
+  
+  .stat-label {
+    font-size: 0.65rem;
+    letter-spacing: 1px;
   }
 }
 </style>

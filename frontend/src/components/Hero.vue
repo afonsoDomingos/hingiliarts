@@ -1,5 +1,6 @@
 <template>
-  <section class="hero" id="home">
+  <section class="hero" id="home" style="position: relative; overflow: hidden;">
+    <div class="glow-blob glow-primary" style="top: 10%; left: -100px; z-index: 0;"></div>
     <div class="hero-slider">
       <div 
         v-for="(slide, index) in slides" 

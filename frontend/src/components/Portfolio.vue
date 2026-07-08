@@ -1,6 +1,7 @@
 <template>
-  <section class="portfolio section" id="portfolio">
-    <div class="container">
+  <section class="portfolio section" id="portfolio" style="position: relative; overflow: hidden;">
+    <div class="glow-blob glow-primary" style="top: 20%; left: -150px; z-index: 1;"></div>
+    <div class="container" style="position: relative; z-index: 2;">
       <div class="section-header text-center reveal">
         <span class="sub-title">Portfólio</span>
         <h2 class="section-title">Nossa Galeria de <span class="highlight">Obras</span></h2>
@@ -254,15 +255,16 @@ onMounted(() => {
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  background: var(--bg-secondary);
+  background: rgba(13, 13, 17, 0.4);
+  backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
-  transition: var(--transition);
+  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.4s, box-shadow 0.4s;
 }
 
 .portfolio-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(255, 138, 0, 0.3);
-  box-shadow: var(--shadow-premium);
+  transform: translateY(-8px);
+  border-color: rgba(255, 138, 0, 0.35);
+  box-shadow: 0 20px 45px rgba(255, 138, 0, 0.12);
 }
 
 .portfolio-img-wrap {
@@ -329,14 +331,15 @@ onMounted(() => {
   font-family: var(--font-serif);
   font-size: 1.5rem;
   color: #fff;
-  line-height: 1.2;
+  line-height: 1.4;
+  margin: 8px 0;
 }
 
 .p-desc {
   color: var(--text-secondary);
-  font-size: 0.9rem;
-  line-height: 1.5;
-  margin-top: 10px;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  margin-top: 6px;
   text-align: left;
 }
 
@@ -503,6 +506,27 @@ onMounted(() => {
 }
 
 @media (max-width: 900px) {
+  .pg-filter {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 10px 0;
+    margin-bottom: 30px;
+    gap: 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .pg-filter::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-btn {
+    flex-shrink: 0;
+    padding: 8px 18px;
+    font-size: 0.8rem;
+  }
+
   .portfolio-grid {
     grid-template-columns: 1fr;
   }
@@ -512,7 +536,7 @@ onMounted(() => {
   }
 
   .portfolio-info {
-    padding: 16px;
+    padding: 20px;
   }
 
   .p-title {

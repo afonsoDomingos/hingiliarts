@@ -1,6 +1,7 @@
 <template>
-  <section class="services section bg-darker" id="services">
-    <div class="container">
+  <section class="services section bg-darker" id="services" style="position: relative; overflow: hidden;">
+    <div class="glow-blob glow-essence" style="bottom: -100px; right: -150px; z-index: 1;"></div>
+    <div class="container" style="position: relative; z-index: 2;">
       <div class="section-header text-center reveal">
         <span class="sub-title">O Que Fazemos</span>
         <h2 class="section-title">Soluções Criativas de <span class="highlight">Alto Impacto</span></h2>
@@ -44,21 +45,24 @@ const services = [
 }
 
 .service-card {
-  background: var(--bg-accent);
+  background: rgba(22, 22, 29, 0.4);
+  backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
   padding: 50px 40px;
   border-radius: 24px;
-  transition: var(--transition);
+  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.4s, background 0.4s, box-shadow 0.4s;
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .service-card:hover {
-  transform: translateY(-10px);
-  border-color: var(--accent-essence);
-  background: var(--bg-secondary);
+  transform: translateY(-8px);
+  border-color: rgba(14, 165, 233, 0.35);
+  background: rgba(22, 22, 29, 0.8);
+  box-shadow: 0 20px 45px rgba(14, 165, 233, 0.12);
 }
 
 .s-icon-box {

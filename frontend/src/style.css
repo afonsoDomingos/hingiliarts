@@ -23,6 +23,7 @@
     --essence-glow: linear-gradient(135deg, rgba(2, 132, 199, 0.3), rgba(14, 165, 233, 0.3));
 
     --font-sans: 'Outfit', sans-serif;
+    --font-serif: 'Playfair Display', serif;
     --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.4);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --container-width: 1200px;
@@ -778,7 +779,17 @@ img {
     }
 }
 
+@media (max-width: 768px) {
+    .section {
+        padding: 60px 0;
+    }
+}
+
 @media (max-width: 600px) {
+    .container {
+        padding: 0 20px;
+    }
+
     .hero-title {
         font-size: 2.2rem;
     }
@@ -877,4 +888,39 @@ img {
     background: var(--gradient-primary);
     border-color: transparent;
     transform: translateY(-5px);
+}
+
+/* ====== Ambient Glow Blobs ====== */
+.glow-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(140px);
+    z-index: 0;
+    opacity: 0.12;
+    pointer-events: none;
+    animation: float-slow 22s infinite alternate ease-in-out;
+}
+
+.glow-primary {
+    background: var(--gradient-primary);
+    width: 350px;
+    height: 350px;
+}
+
+.glow-essence {
+    background: var(--gradient-essence);
+    width: 450px;
+    height: 450px;
+}
+
+@keyframes float-slow {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+    50% {
+        transform: translate(60px, 40px) scale(1.15);
+    }
+    100% {
+        transform: translate(-40px, -60px) scale(0.9);
+    }
 }
