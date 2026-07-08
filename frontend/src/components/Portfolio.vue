@@ -237,9 +237,11 @@ onMounted(() => {
 }
 
 .portfolio-item {
-  height: auto !important;
-  aspect-ratio: auto !important;
-  overflow: visible !important;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  aspect-ratio: auto;
+  overflow: visible;
 }
 
 .portfolio-grid {
@@ -259,6 +261,7 @@ onMounted(() => {
   backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
   transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.4s, box-shadow 0.4s;
+  height: 100%;
 }
 
 .portfolio-card:hover {
@@ -341,6 +344,7 @@ onMounted(() => {
   line-height: 1.65;
   margin-top: 6px;
   text-align: left;
+  white-space: pre-line;
 }
 
 .read-more-btn {
@@ -488,6 +492,7 @@ onMounted(() => {
   color: var(--text-secondary);
   font-size: 1rem;
   line-height: 1.5;
+  white-space: pre-line;
 }
 
 .lb-views-count {
