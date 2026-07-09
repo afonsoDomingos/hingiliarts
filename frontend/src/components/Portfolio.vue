@@ -39,16 +39,22 @@
                 </span>
               </div>
               <h4 class="p-title">{{ item.title }}</h4>
-              <p class="p-desc" v-if="item.description">
-                {{ getTruncatedDesc(item) }}
-                <span 
-                  v-if="isLongDesc(item)" 
-                  class="read-more-btn"
-                  @click.stop="toggleExpand(item._id || item.id, $event)"
-                >
-                  {{ expandedCards[item._id || item.id] ? ' Ler menos' : ' Ler mais' }}
-                </span>
-              </p>
+                <div class="p-desc" v-if="item.description">
+                  <p 
+                    v-for="(para, idx) in getParagraphs(getTruncatedDesc(item))" 
+                    :key="idx" 
+                    class="p-desc-para"
+                  >
+                    {{ para }}
+                    <span 
+                      v-if="idx === getParagraphs(getTruncatedDesc(item)).length - 1 && isLongDesc(item)" 
+                      class="read-more-btn"
+                      @click.stop="toggleExpand(item._id || item.id, $event)"
+                    >
+                      {{ expandedCards[item._id || item.id] ? ' Ler menos' : ' Ler mais' }}
+                    </span>
+                  </p>
+                </div>
             </div>
           </div>
         </div>
@@ -84,7 +90,15 @@
           <div class="lightbox-details">
             <div class="lb-info-wrap">
               <h3 class="lb-title">{{ lightboxTitle }}</h3>
-              <p class="lb-desc" v-if="lightboxDescription">{{ formatDescription(lightboxDescription) }}</p>
+              <div class="lb-desc" v-if="lightboxDescription">
+                <p 
+                  v-for="(para, idx) in getParagraphs(lightboxDescription)" 
+                  :key="idx" 
+                  class="lb-desc-para"
+                >
+                  {{ para }}
+                </p>
+              </div>
               <div class="lb-views-count" v-if="lightboxViews !== undefined">
                 <i class="fa-solid fa-eye"></i> {{ lightboxViews }} visualizações
               </div>
@@ -118,24 +132,22 @@ const toggleExpand = (id, event) => {
   expandedCards.value[id] = !expandedCards.value[id];
 };
 
-const formatDescription = (text) => {
-  if (!text) return '';
-  return text.replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+const getParagraphs = (text) => {
+  if (!text) return [];
+  return text.replace(/\r\n/g, '\n').split('\n').map(p => p.trim()).filter(p => p.length > 0);
 };
 
 const getTruncatedDesc = (item) => {
   if (!item.description) return '';
-  const formatted = formatDescription(item.description);
   const limit = 120;
-  if (formatted.length <= limit || expandedCards.value[item._id || item.id]) {
-    return formatted;
+  if (item.description.length <= limit || expandedCards.value[item._id || item.id]) {
+    return item.description;
   }
-  return formatted.slice(0, limit) + '...';
+  return item.description.slice(0, limit) + '...';
 };
 
 const isLongDesc = (item) => {
-  if (!item.description) return false;
-  return formatDescription(item.description).length > 120;
+  return item.description && item.description.length > 120;
 };
 
 const filters = [
@@ -348,10 +360,17 @@ onMounted(() => {
 .p-desc {
   color: var(--text-secondary);
   font-size: 0.95rem;
-  line-height: 1.65;
+  line-height: 1.5;
   margin-top: 6px;
   text-align: left;
-  white-space: pre-line;
+}
+
+.p-desc-para {
+  margin-bottom: 8px;
+}
+
+.p-desc-para:last-child {
+  margin-bottom: 0;
 }
 
 .read-more-btn {
@@ -498,8 +517,15 @@ onMounted(() => {
 .lb-desc {
   color: var(--text-secondary);
   font-size: 1rem;
-  line-height: 1.5;
-  white-space: pre-line;
+  line-height: 1.45;
+}
+
+.lb-desc-para {
+  margin-bottom: 10px;
+}
+
+.lb-desc-para:last-child {
+  margin-bottom: 0;
 }
 
 .lb-views-count {
