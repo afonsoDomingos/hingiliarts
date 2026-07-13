@@ -176,15 +176,15 @@ onUnmounted(() => {
 
 /* CTA Styles */
 .cta-banner {
-  padding: 120px 0;
+  padding: 60px 0;
 }
 
 .cta-card {
   background: linear-gradient(135deg, rgba(229, 46, 113, 0.1), rgba(255, 138, 0, 0.1)), url('/assets/img/Banner01.jpg');
   background-size: cover;
   background-position: center;
-  border-radius: 40px;
-  padding: 100px 40px;
+  border-radius: 24px;
+  padding: 60px 30px;
   position: relative;
   overflow: hidden;
   border: 1px solid var(--glass-border);
@@ -201,27 +201,47 @@ onUnmounted(() => {
 .cta-content {
   position: relative;
   z-index: 2;
-  max-width: 800px;
+  max-width: 700px;
   margin: 0 auto;
 }
 
 .cta-title {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-family: var(--font-serif);
-  margin-bottom: 20px;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-family: var(--font-sans);
+  font-weight: 800;
+  margin-bottom: 15px;
   color: #fff;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
 }
 
 .cta-text {
-  font-size: 1.2rem;
-  color: var(--text-secondary);
-  margin-bottom: 40px;
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.7) !important;
+  margin-bottom: 30px;
 }
 
 .cta-btns {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 15px;
+}
+
+.cta-card .btn-outline {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+  transition: var(--transition);
+}
+
+.cta-card .btn-outline:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: #ffffff !important;
+  transform: translateY(-2px);
+}
+
+.cta-card .btn-primary:hover {
+  transform: translateY(-2px);
 }
 
 @media (max-width: 600px) {
