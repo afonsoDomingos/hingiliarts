@@ -7,13 +7,26 @@
       
       <nav class="navbar">
         <ul :class="['nav-list', { 'active': isMenuActive }]">
-          <li v-for="link in navLinks" :key="link.href">
+          <li v-for="(link, index) in navLinks" :key="link.href">
             <a :href="link.href" class="nav-link" @click="closeMenu">
+              <span class="nav-num">0{{ index + 1 }}</span>
               <span class="nav-link-inner">{{ link.text }}</span>
             </a>
           </li>
           <li class="nav-cta">
             <a href="/#contact" class="btn btn-primary btn-sm" @click="closeMenu">Orçamento</a>
+          </li>
+          
+          <!-- Mobile Menu Footer inside drawer -->
+          <li class="mobile-menu-footer-item">
+            <div class="mobile-menu-footer">
+              <span class="m-footer-title">Hingili Arts</span>
+              <div class="m-socials">
+                <a href="https://web.facebook.com/Xiwozramati" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://wa.me/258844473620" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+              </div>
+            </div>
           </li>
         </ul>
         
@@ -242,21 +255,134 @@ onUnmounted(() => {
     position: fixed;
     top: 0;
     right: -100%;
-    width: 300px;
+    width: 320px;
     height: 100vh;
-    background: var(--bg-secondary);
+    background: rgba(13, 13, 17, 0.96);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
     flex-direction: column;
-    justify-content: center;
-    padding: 60px 40px;
-    transition: var(--transition);
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 100px 40px 60px 40px;
+    transition: right 0.5s cubic-bezier(0.77, 0.2, 0.05, 1.0);
     z-index: 2100;
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+    gap: 15px;
+  }
+  
+  body[data-theme="light"] .nav-list {
+    background: rgba(234, 234, 239, 0.96);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.08);
   }
   
   .nav-list.active { right: 0; }
   
-  .nav-cta { margin: 20px 0 0 0; width: 100%; }
+  .nav-list li {
+    width: 100%;
+  }
+  
+  .nav-link {
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    transition: padding 0.3s ease, color 0.3s ease;
+  }
+  
+  body[data-theme="light"] .nav-link {
+    border-bottom-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  .nav-link:hover {
+    color: var(--accent-essence) !important;
+    padding-left: 8px;
+  }
+  
+  .nav-link::after {
+    display: none;
+  }
+  
+  .nav-cta { margin: 15px 0 0 0; width: 100%; }
   .nav-cta .btn { width: 100%; }
+}
+
+/* Nav Num and Mobile Footer styling */
+.nav-num {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-essence);
+  margin-right: 10px;
+  font-family: var(--font-sans);
+  opacity: 0.8;
+}
+
+@media (min-width: 901px) {
+  .nav-num {
+    display: none;
+  }
+  .mobile-menu-footer-item {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .mobile-menu-footer-item {
+    margin-top: auto;
+    width: 100%;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  
+  body[data-theme="light"] .mobile-menu-footer-item {
+    border-top-color: rgba(0, 0, 0, 0.08);
+  }
+  
+  .mobile-menu-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .m-footer-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+  
+  .m-socials {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .m-socials a {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    transition: var(--transition);
+  }
+  
+  body[data-theme="light"] .m-socials a {
+    background: rgba(0, 0, 0, 0.05);
+    color: #3f3f50;
+  }
+  
+  .m-socials a:hover {
+    background: var(--gradient-essence);
+    color: #fff;
+    transform: translateY(-2px);
+  }
 }
 
 .menu-overlay {
