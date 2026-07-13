@@ -1226,3 +1226,8 @@ body[data-theme="light"] .header.scrolled .theme-toggle:hover {
       color: #0f0f18 !important;
   }
 }
+
+/* ── Hamburger no Mobile (Tema Claro quando aberto) ── */
+body[data-theme="light"] .hamburger.active .hb-inner span {
+    background: #0f0f18 !important;
+}
