@@ -168,9 +168,24 @@ const triggerToast = (message) => {
   }, 3000);
 };
 
+const slugify = (text) => {
+  if (!text) return '';
+  return text
+    .toString()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // remove accents
+    .replace(/[^\w\s-]/g, '')        // remove special chars
+    .trim()
+    .replace(/[-\s]+/g, '-')         // replace spaces and hyphens with single hyphen
+    .replace(/^-+/, '')              // trim leading hyphens
+    .replace(/-+$/, '');             // trim trailing hyphens
+};
+
 const getShareUrl = (project) => {
-  const projectId = project?._id || project?.id;
-  return `${window.location.origin}/?project=${projectId}`;
+  if (!project) return window.location.origin;
+  const slug = slugify(project.title);
+  return `${window.location.origin}/?project=${slug}`;
 };
 
 const copyShareLink = (project) => {
@@ -247,7 +262,13 @@ const filters = computed(() => {
 const filteredPortfolio = computed(() => {
   if (currentFilter.value === 'all') return portfolio.value;
   return portfolio.value.filter(item => item.category === currentFilter.value);
-});
+});const findProjectByQuery = (queryVal) => {
+  if (!queryVal) return null;
+  return portfolio.value.find(p => {
+    const id = p._id || p.id;
+    return id === queryVal || slugify(p.title) === queryVal;
+  });
+};
 
 const fetchPortfolio = async () => {
   try {
@@ -256,7 +277,7 @@ const fetchPortfolio = async () => {
     
     // Verificar se existe query param de projeto no carregamento inicial
     if (route.query.project) {
-      const project = portfolio.value.find(p => (p._id || p.id) === route.query.project);
+      const project = findProjectByQuery(route.query.project);
       if (project) {
         openLightbox(project);
       }
@@ -276,8 +297,9 @@ const openLightbox = (item) => {
   isLightboxActive.value = true;
   document.body.style.overflow = 'hidden';
   
-  // Atualizar query parameter na URL
-  router.replace({ query: { ...route.query, project: item._id || item.id } });
+  // Atualizar query parameter na URL com o slug
+  const slug = slugify(item.title);
+  router.replace({ query: { ...route.query, project: slug } });
   
   incrementView(item._id || item.id);
 };
@@ -317,8 +339,11 @@ const prevImage = () => {
 // Observar alterações no query parameter da rota (ex: botão Voltar/Avançar do browser)
 watch(() => route.query.project, (newVal) => {
   if (newVal) {
-    const project = portfolio.value.find(p => (p._id || p.id) === newVal);
-    if (project && (!currentProject.value || (currentProject.value._id || currentProject.value.id) !== newVal)) {
+    const project = findProjectByQuery(newVal);
+    const currentId = currentProject.value ? (currentProject.value._id || currentProject.value.id) : null;
+    const projectId = project ? (project._id || project.id) : null;
+    
+    if (project && currentId !== projectId) {
       openLightbox(project);
     }
   } else {
@@ -329,7 +354,6 @@ watch(() => route.query.project, (newVal) => {
     }
   }
 });
-
 onMounted(() => {
   fetchPortfolio();
 });
