@@ -40,7 +40,7 @@
     </div>
     <div class="footer-bottom">
       <div class="container footer-bottom-content">
-        <p>&copy; 2026 Hingili Arts Lda. Todos os direitos reservados. Design e Desenvolvimento Vibe <a href="https://linkedin.com/in/afonso-domingos-6b59361a5/" target="_blank" style="color: var(--accent-primary); text-decoration: none;">Afonso Domingos</a>.</p>
+        <p>&copy; 2026 Hingili Arts Lda. Todos os direitos reservados. Design e Desenvolvimento <a href="http://isvibe.vercel.app/" target="_blank" style="color: var(--accent-essence); text-decoration: none; font-weight: 700;">Vibe</a> | <a href="https://linkedin.com/in/afonso-domingos-6b59361a5/" target="_blank" style="color: var(--accent-primary); text-decoration: none;">Afonso Domingos</a>.</p>
         <router-link to="/admin/login" class="admin-link-subtle">Acesso Restrito</router-link>
       </div>
     </div>
