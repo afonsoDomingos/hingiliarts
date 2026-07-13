@@ -105,7 +105,7 @@ const items = [
   font-family: var(--font-serif);
   font-size: 1.8rem;
   margin-bottom: 15px;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .card-text {

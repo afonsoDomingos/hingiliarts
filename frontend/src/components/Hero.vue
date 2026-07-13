@@ -21,15 +21,10 @@
       </div>
     </div>
 
-    <!-- Scroll Down Indicator -->
-    <div class="scroll-indicator">
-      <div class="mouse">
-        <div class="wheel"></div>
-      </div>
-      <div class="arrows">
-        <span></span>
-        <span></span>
-      </div>
+    <!-- Side Scroll Indicator -->
+    <div class="side-scroll">
+      <div class="side-scroll-line"></div>
+      <span class="side-scroll-label">Scroll</span>
     </div>
   </section>
 </template>
@@ -83,66 +78,49 @@ onUnmounted(() => {
   border-color: #fff;
 }
 
-/* Scroll Indicator */
-.scroll-indicator {
+/* ── Premium Side Scroll Indicator ── */
+.side-scroll {
   position: absolute;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
+  right: 48px;
+  bottom: 60px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  opacity: 0.6;
+  gap: 14px;
+  z-index: 10;
 }
 
-.mouse {
-  width: 26px;
-  height: 42px;
-  border: 2px solid #fff;
-  border-radius: 20px;
-  position: relative;
-}
-
-.wheel {
-  width: 4px;
-  height: 8px;
-  background: #fff;
+.side-scroll-line {
+  width: 1px;
+  height: 80px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, #ffffff 40%, rgba(255,255,255,0) 100%);
+  background-size: 100% 200%;
+  animation: scrollLine 2s ease-in-out infinite;
   border-radius: 2px;
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  animation: scrollWheel 2s infinite;
 }
 
-.arrows span {
-  display: block;
-  width: 10px;
-  height: 10px;
-  border-bottom: 2px solid #fff;
-  border-right: 2px solid #fff;
-  transform: rotate(45deg);
-  margin: -5px;
-  animation: scrollArrows 2s infinite;
+@keyframes scrollLine {
+  0%   { background-position: 0% 0%;   opacity: 0; }
+  30%  { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { background-position: 0% 100%; opacity: 0; }
 }
 
-.arrows span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-@keyframes scrollWheel {
-  0% { opacity: 1; top: 8px; }
-  100% { opacity: 0; top: 24px; }
-}
-
-@keyframes scrollArrows {
-  0% { opacity: 0; transform: rotate(45deg) translate(-10px, -10px); }
-  50% { opacity: 1; }
-  100% { opacity: 0; transform: rotate(45deg) translate(10px, 10px); }
+.side-scroll-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
 }
 
 @media (max-width: 600px) {
+  .side-scroll {
+    display: none;
+  }
+
   .hero-btns {
     flex-direction: row;
     flex-wrap: wrap;

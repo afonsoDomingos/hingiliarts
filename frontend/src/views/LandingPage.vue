@@ -166,7 +166,7 @@ onUnmounted(() => {
 .hl-title {
   font-size: 1.25rem;
   margin-bottom: 10px;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .hl-text {
@@ -296,7 +296,7 @@ onUnmounted(() => {
   font-size: 1.3rem;
   font-family: var(--font-serif);
   margin-bottom: 12px;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .process-step-text {
