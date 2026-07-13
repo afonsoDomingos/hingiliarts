@@ -69,20 +69,16 @@ body[data-theme="light"] .header.scrolled {
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.07);
 }
 
-body[data-theme="light"] .nav-link {
+body[data-theme="light"] .header.scrolled .nav-link {
     color: #3f3f50;
 }
 
-body[data-theme="light"] .nav-link:hover {
+body[data-theme="light"] .header.scrolled .nav-link:hover {
     color: #0f0f18;
 }
 
-body[data-theme="light"] .hb-inner span {
+body[data-theme="light"] .header.scrolled .hb-inner span {
     background: #0f0f18;
-}
-
-body[data-theme="light"] .nav-list {
-    background: #eaeaef;
 }
 
 /* ── Hero: já tem imagem de fundo, funciona bem nos dois temas ── */
@@ -1166,4 +1162,67 @@ img {
     100% {
         transform: translate(-40px, -60px) scale(0.9);
     }
+}
+
+/* ====== Correções de Contraste e Elegância (Tema Claro / Desktop) ====== */
+
+/* ── Hero: Sempre fundo escuro (Slider) ── */
+.hero .hero-title {
+    color: #ffffff !important;
+}
+.hero .hero-subtitle {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+.hero .hero-tag {
+    color: rgba(255, 255, 255, 0.75) !important;
+}
+.hero .btn-outline {
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    color: #ffffff !important;
+}
+.hero .btn-outline:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: #ffffff !important;
+}
+
+/* ── Botão de Tema (Navbar) ── */
+.theme-toggle {
+    color: rgba(255, 255, 255, 0.85) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+.theme-toggle:hover {
+    color: #ffffff !important;
+    background: var(--gradient-primary) !important;
+    border-color: transparent !important;
+}
+
+body[data-theme="light"] .header.scrolled .theme-toggle {
+    color: #3f3f50 !important;
+    background: rgba(0, 0, 0, 0.05) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+}
+body[data-theme="light"] .header.scrolled .theme-toggle:hover {
+    color: #ffffff !important;
+    background: var(--gradient-primary) !important;
+    border-color: transparent !important;
+}
+
+/* ── Menu Desktop (Fundo Transparente vs Scrolled) ── */
+@media (min-width: 901px) {
+  /* Transparente: sempre branco */
+  .nav-link {
+      color: rgba(255, 255, 255, 0.85) !important;
+  }
+  .nav-link:hover {
+      color: #ffffff !important;
+  }
+  
+  /* Com scroll + Tema Claro: texto escuro */
+  body[data-theme="light"] .header.scrolled .nav-link {
+      color: #3f3f50 !important;
+  }
+  body[data-theme="light"] .header.scrolled .nav-link:hover {
+      color: #0f0f18 !important;
+  }
 }
