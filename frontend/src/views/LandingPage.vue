@@ -74,6 +74,23 @@
         <i class="fa-brands fa-whatsapp"></i>
       </a>
     </div>
+
+    <!-- Welcome Toast -->
+    <Transition name="welcome-toast">
+      <div v-if="showWelcome" class="welcome-toast-container">
+        <div class="welcome-toast-glow"></div>
+        <div class="welcome-toast-content">
+          <div class="w-icon">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+          </div>
+          <div class="w-text-block">
+            <h5 class="w-title">{{ welcomeGreeting }}</h5>
+            <p class="w-desc">Explore a nossa galeria e transforme o seu espaço com arte.</p>
+          </div>
+          <button @click="closeWelcome" class="w-close-btn">&times;</button>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -89,6 +106,38 @@ import VisitorMural from '../components/VisitorMural.vue';
 import Footer from '../components/Footer.vue';
 
 const showScrollTop = ref(false);
+const showWelcome = ref(false);
+const welcomeGreeting = ref('');
+
+const getWelcomeGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) {
+    return 'Bom dia! Bem-vindo à Hingili Arts ☀️';
+  } else if (hour >= 12 && hour < 18) {
+    return 'Boa tarde! Bem-vindo à Hingili Arts 🌤️';
+  } else {
+    return 'Boa noite! Bem-vindo à Hingili Arts 🌙';
+  }
+};
+
+const triggerWelcome = () => {
+  const hasVisited = sessionStorage.getItem('hingili-welcomed');
+  if (!hasVisited) {
+    welcomeGreeting.value = getWelcomeGreeting();
+    setTimeout(() => {
+      showWelcome.value = true;
+      sessionStorage.setItem('hingili-welcomed', 'true');
+      
+      setTimeout(() => {
+        showWelcome.value = false;
+      }, 8000);
+    }, 1500);
+  }
+};
+
+const closeWelcome = () => {
+  showWelcome.value = false;
+};
 
 const highlights = [
   { icon: 'fa-solid fa-building', title: 'Projetos Corporativos', text: 'Experiência sólida na concepção de arte para empresas.' },
@@ -136,6 +185,7 @@ onMounted(() => {
   window.addEventListener('scroll', handleScroll);
   // Pequeno timeout para garantir que o DOM está pronto e evitar conflitos de carregamento
   setTimeout(initReveal, 100);
+  triggerWelcome();
 });
 
 onUnmounted(() => {
