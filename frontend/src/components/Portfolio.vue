@@ -34,9 +34,14 @@
             <div class="portfolio-info">
               <div class="p-info-top">
                 <span class="p-category">{{ categoryLabel(item.category) }}</span>
-                <span class="p-views-badge" v-if="item.views">
-                  <i class="fa-solid fa-eye"></i> {{ item.views }}
-                </span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <button class="card-share-btn" @click.stop="copyShareLink(item)" title="Copiar Link">
+                    <i class="fa-solid fa-share-nodes"></i>
+                  </button>
+                  <span class="p-views-badge" v-if="item.views">
+                    <i class="fa-solid fa-eye"></i> {{ item.views }}
+                  </span>
+                </div>
               </div>
               <h4 class="p-title">{{ item.title }}</h4>
                 <div class="p-desc" v-if="item.description">
@@ -102,19 +107,45 @@
               <div class="lb-views-count" v-if="lightboxViews !== undefined">
                 <i class="fa-solid fa-eye"></i> {{ lightboxViews }} visualizações
               </div>
+              <div class="lb-share-area" v-if="currentProject">
+                <span class="share-label">Partilhar:</span>
+                <div class="share-buttons">
+                  <button class="share-btn whatsapp" @click.stop="shareWhatsApp(currentProject)" title="Partilhar no WhatsApp">
+                    <i class="fa-brands fa-whatsapp"></i>
+                  </button>
+                  <button class="share-btn facebook" @click.stop="shareFacebook(currentProject)" title="Partilhar no Facebook">
+                    <i class="fa-brands fa-facebook-f"></i>
+                  </button>
+                  <button class="share-btn link" @click.stop="copyShareLink(currentProject)" title="Copiar Link">
+                    <i class="fa-solid fa-link"></i>
+                  </button>
+                </div>
+              </div>
             </div>
             <div class="lb-counter">{{ currentImageIndex + 1 }} / {{ currentAlbum.length }}</div>
           </div>
         </div>
       </div>
+      
+      <!-- Toast Notification -->
+      <Transition name="toast">
+        <div v-if="showToast" class="custom-toast success">
+          <i class="fa-solid fa-check-circle"></i>
+          <span>{{ toastMessage }}</span>
+        </div>
+      </Transition>
     </Teleport>
   </section>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import API_URL from '../config/api.js';
+
+const route = useRoute();
+const router = useRouter();
 
 const portfolio = ref([]);
 const currentFilter = ref('all');
@@ -124,6 +155,45 @@ const currentImageIndex = ref(0);
 const lightboxTitle = ref('');
 const lightboxDescription = ref('');
 const lightboxViews = ref(0);
+
+const currentProject = ref(null);
+const showToast = ref(false);
+const toastMessage = ref('');
+
+const triggerToast = (message) => {
+  toastMessage.value = message;
+  showToast.value = true;
+  setTimeout(() => {
+    showToast.value = false;
+  }, 3000);
+};
+
+const getShareUrl = (project) => {
+  const projectId = project?._id || project?.id;
+  return `${window.location.origin}/?project=${projectId}`;
+};
+
+const copyShareLink = (project) => {
+  const url = getShareUrl(project);
+  navigator.clipboard.writeText(url)
+    .then(() => {
+      triggerToast('Link copiado com sucesso! 🎉');
+    })
+    .catch(() => {
+      triggerToast('Erro ao copiar o link. ❌');
+    });
+};
+
+const shareWhatsApp = (project) => {
+  const url = getShareUrl(project);
+  const text = `Espreita esta obra incrível de HingiliArts: *${project.title}*\n${url}`;
+  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+};
+
+const shareFacebook = (project) => {
+  const url = getShareUrl(project);
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+};
 
 const expandedCards = ref({});
 
@@ -150,13 +220,29 @@ const isLongDesc = (item) => {
   return item.description && item.description.length > 120;
 };
 
-const filters = [
-  { label: 'Todos', value: 'all' },
-  { label: 'Murais', value: 'mural' },
-  { label: 'Publicidade', value: 'ads' },
-  { label: 'Retratos', value: 'portrait' },
-  { label: 'Decorações', value: 'mosaic' }
-];
+const categoryLabel = (cat) => {
+  const map = { 
+    mural: 'Mural Artístico', 
+    ads: 'Publicidade & Branding', 
+    portrait: 'Retrato Surreal', 
+    mosaic: 'Decoração' 
+  };
+  return map[cat] || cat;
+};
+
+const filters = computed(() => {
+  const base = [{ label: 'Todos', value: 'all' }];
+  const uniqueCategories = [...new Set(portfolio.value.map(item => item.category))].filter(Boolean);
+  
+  uniqueCategories.forEach(cat => {
+    const label = categoryLabel(cat);
+    if (!base.some(f => f.value === cat)) {
+      base.push({ label, value: cat });
+    }
+  });
+  
+  return base;
+});
 
 const filteredPortfolio = computed(() => {
   if (currentFilter.value === 'all') return portfolio.value;
@@ -167,12 +253,21 @@ const fetchPortfolio = async () => {
   try {
     const response = await axios.get(`${API_URL}/api/portfolio`);
     portfolio.value = response.data;
+    
+    // Verificar se existe query param de projeto no carregamento inicial
+    if (route.query.project) {
+      const project = portfolio.value.find(p => (p._id || p.id) === route.query.project);
+      if (project) {
+        openLightbox(project);
+      }
+    }
   } catch (error) {
     console.error('Falha ao carregar portfólio:', error);
   }
 };
 
 const openLightbox = (item) => {
+  currentProject.value = item;
   currentAlbum.value = item.images;
   currentImageIndex.value = 0;
   lightboxTitle.value = item.title;
@@ -180,6 +275,9 @@ const openLightbox = (item) => {
   lightboxViews.value = item.views || 0;
   isLightboxActive.value = true;
   document.body.style.overflow = 'hidden';
+  
+  // Atualizar query parameter na URL
+  router.replace({ query: { ...route.query, project: item._id || item.id } });
   
   incrementView(item._id || item.id);
 };
@@ -200,6 +298,12 @@ const incrementView = async (id) => {
 const closeLightbox = () => {
   isLightboxActive.value = false;
   document.body.style.overflow = '';
+  currentProject.value = null;
+  
+  // Remover query parameter da URL
+  const query = { ...route.query };
+  delete query.project;
+  router.replace({ query });
 };
 
 const nextImage = () => {
@@ -210,15 +314,21 @@ const prevImage = () => {
   currentImageIndex.value = (currentImageIndex.value - 1 + currentAlbum.value.length) % currentAlbum.value.length;
 };
 
-const categoryLabel = (cat) => {
-  const map = { 
-    mural: 'Mural Artístico', 
-    ads: 'Publicidade & Branding', 
-    portrait: 'Retrato Hiper-realista', 
-    mosaic: 'Decoração' 
-  };
-  return map[cat] || cat;
-};
+// Observar alterações no query parameter da rota (ex: botão Voltar/Avançar do browser)
+watch(() => route.query.project, (newVal) => {
+  if (newVal) {
+    const project = portfolio.value.find(p => (p._id || p.id) === newVal);
+    if (project && (!currentProject.value || (currentProject.value._id || currentProject.value.id) !== newVal)) {
+      openLightbox(project);
+    }
+  } else {
+    if (isLightboxActive.value) {
+      isLightboxActive.value = false;
+      document.body.style.overflow = '';
+      currentProject.value = null;
+    }
+  }
+});
 
 onMounted(() => {
   fetchPortfolio();
@@ -609,4 +719,104 @@ onMounted(() => {
   .lb-prev { left: 10px; }
   .lb-next { right: 10px; }
 }
+
+/* Estilos de Partilha */
+.lb-share-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.share-label {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.share-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.share-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.share-btn:hover {
+  transform: translateY(-2px);
+}
+
+.share-btn.whatsapp:hover {
+  background: #25d366;
+  border-color: transparent;
+  color: #fff;
+}
+
+.share-btn.facebook:hover {
+  background: #1877f2;
+  border-color: transparent;
+  color: #fff;
+}
+
+.share-btn.link:hover {
+  background: var(--gradient-primary);
+  border-color: transparent;
+  color: #fff;
+}
+
+.card-share-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+.card-share-btn:hover {
+  color: var(--accent-essence);
+  transform: scale(1.1);
+}
+
+/* Toast Global/Local */
+.custom-toast {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  padding: 16px 24px;
+  border-radius: 12px;
+  background: rgba(25, 25, 30, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 9999;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.custom-toast.success { border-left: 4px solid #10b981; }
+.custom-toast.success i { color: #10b981; }
+
+.toast-enter-active, .toast-leave-active {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.toast-enter-from { opacity: 0; transform: translateX(100px); }
+.toast-leave-to { opacity: 0; transform: scale(0.9); }
 </style>

@@ -17,6 +17,11 @@
           </li>
         </ul>
         
+        <!-- Theme Toggle -->
+        <button class="theme-toggle" @click="toggleTheme" :title="isDark ? 'Activar Tema Claro' : 'Activar Tema Escuro'">
+          <i :class="isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon'"></i>
+        </button>
+        
         <div :class="['hamburger', { 'active': isMenuActive }]" @click="toggleMenu">
           <div class="hb-inner">
             <span></span>
@@ -37,6 +42,7 @@ import { ref, onMounted, onUnmounted } from 'vue';
 
 const isScrolled = ref(false);
 const isMenuActive = ref(false);
+const isDark = ref(true);
 
 const navLinks = [
   { text: 'Início', href: '/' },
@@ -46,6 +52,18 @@ const navLinks = [
   { text: 'Leilões', href: '/auctions' },
   { text: 'Contactos', href: '/#contact' }
 ];
+
+const toggleTheme = () => {
+  isDark.value = !isDark.value;
+  const theme = isDark.value ? 'dark' : 'light';
+  document.body.setAttribute('data-theme', isDark.value ? '' : 'light');
+  if (!isDark.value) {
+    document.body.setAttribute('data-theme', 'light');
+  } else {
+    document.body.removeAttribute('data-theme');
+  }
+  localStorage.setItem('hingili-theme', theme);
+};
 
 const toggleMenu = () => {
   isMenuActive.value = !isMenuActive.value;
@@ -63,6 +81,13 @@ const handleScroll = () => {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
+  
+  // Restaurar tema guardado
+  const savedTheme = localStorage.getItem('hingili-theme');
+  if (savedTheme === 'light') {
+    isDark.value = false;
+    document.body.setAttribute('data-theme', 'light');
+  }
 });
 
 onUnmounted(() => {
@@ -139,6 +164,12 @@ onUnmounted(() => {
 
 .nav-cta {
   margin-left: 10px;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .btn-sm {

@@ -206,42 +206,69 @@
           <button class="modal-close" @click="showModal = false"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form @submit.prevent="saveProject" class="project-form">
-          <div class="form-group">
-            <label>Título do Projeto *</label>
-            <input v-model="formData.title" type="text" placeholder="Ex: Mural Artístico" required>
-          </div>
-          <div class="form-group">
-            <label>Categoria *</label>
-            <select v-model="formData.category" required>
-              <option value="" disabled>Escolha a Categoria</option>
-              <option value="mural">Mural Artístico</option>
-              <option value="ads">Publicidade & Branding</option>
-              <option value="portrait">Retratos</option>
-              <option value="mosaic">Projeto Decorativo</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Descrição <span style="color:#555;font-size:0.75rem;">(pode ser longa — o visitante verá um botão "Ler mais")</span></label>
-            <textarea v-model="formData.description" rows="6" placeholder="Descreve a obra em detalhe: contexto, técnica, materiais, dimensões, história..."></textarea>
-          </div>
-          
-          <div class="form-group">
-            <label>{{ isEditing ? 'Adicionar mais Imagens (Opcional)' : 'Imagens * (até 5 fotos)' }}</label>
-            <div class="file-drop" @click="$refs.fileInput.click()">
-              <i class="fa-solid fa-cloud-arrow-up"></i>
-              <p v-if="selectedFiles.length === 0">Clica para seleccionar imagens</p>
-              <p v-else><strong>{{ selectedFiles.length }} ficheiro(s)</strong> selecionado(s)</p>
+          <!-- Coluna Esquerda: Detalhes do Projeto -->
+          <div class="form-column-left">
+            <div class="form-group">
+              <label>Título do Projeto *</label>
+              <input v-model="formData.title" type="text" placeholder="Ex: Mural Artístico" required>
             </div>
-            <input ref="fileInput" type="file" multiple @change="handleFileChange" accept="image/*" :required="!isEditing" style="display:none">
+            <div class="form-group">
+              <label>Categoria *</label>
+              <select v-model="categorySelection" @change="onCategorySelectChange" required>
+                <option value="" disabled>Escolha a Categoria</option>
+                <option value="mural">Mural Artístico</option>
+                <option value="ads">Publicidade & Branding</option>
+                <option value="portrait">Retrato Surreal</option>
+                <option value="mosaic">Projeto Decorativo</option>
+                <option value="custom">Outra (Digitar Manualmente)...</option>
+              </select>
+            </div>
+            
+            <div v-if="categorySelection === 'custom'" class="form-group">
+              <label>Digita a nova Categoria *</label>
+              <input v-model="customCategory" type="text" placeholder="Ex: Retrato Surreal, Grafiti..." required>
+            </div>
+
+            <div class="form-group">
+              <label>Descrição <span style="color:#555;font-size:0.75rem;">(pode ser longa — o visitante verá um botão "Ler mais")</span></label>
+              <textarea v-model="formData.description" rows="8" placeholder="Descreve a obra em detalhe: contexto, técnica, materiais, dimensões, história..."></textarea>
+            </div>
           </div>
           
-          <div v-if="isEditing" class="edit-note">
-            <p><i class="fa-solid fa-camera-retro"></i> Notas: As novas imagens serão adicionadas ao projeto. Os textos atuais serão atualizados.</p>
+          <!-- Coluna Direita: Imagens -->
+          <div class="form-column-right">
+            <!-- Imagens Existentes (Apenas na edição) -->
+            <div v-if="isEditing && existingImages.length > 0" class="form-group">
+              <label>Imagens Atuais (Clica no lixo para remover)</label>
+              <div class="existing-images-grid">
+                <div v-for="(img, idx) in existingImages" :key="idx" class="existing-image-thumb">
+                  <img :src="img" alt="Miniatura">
+                  <button type="button" class="btn-remove-existing" @click="removeExistingImage(idx)" title="Remover Imagem">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>{{ isEditing ? 'Adicionar mais Imagens (Opcional)' : 'Imagens * (até 5 fotos)' }}</label>
+              <div class="file-drop" @click="$refs.fileInput.click()">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <p v-if="selectedFiles.length === 0">Clica para seleccionar imagens</p>
+                <p v-else><strong>{{ selectedFiles.length }} ficheiro(s)</strong> selecionado(s)</p>
+              </div>
+              <input ref="fileInput" type="file" multiple @change="handleFileChange" accept="image/*" :required="!isEditing" style="display:none">
+            </div>
+            
+            <div v-if="isEditing" class="edit-note" style="margin-top: 10px;">
+              <p><i class="fa-solid fa-camera-retro"></i> Notas: As novas imagens serão adicionadas ao projeto. Os textos e imagens atuais serão atualizados.</p>
+            </div>
+
+            <p v-if="saveError" class="error-msg">{{ saveError }}</p>
           </div>
 
-          <p v-if="saveError" class="error-msg">{{ saveError }}</p>
-
-          <div class="modal-actions">
+          <!-- Ações do Formulário -->
+          <div class="modal-actions form-actions-wrapper">
             <button type="button" @click="showModal = false" class="btn btn-secondary">Cancelar</button>
             <button type="submit" class="btn btn-primary" :disabled="isSaving">
               <i v-if="isSaving" class="fa-solid fa-circle-notch fa-spin"></i>
@@ -339,7 +366,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import API_URL from '../../config/api.js';
@@ -372,6 +399,27 @@ const adminError = ref('');
 const selectedFiles = ref([]);
 const selectedAuctionFile = ref(null);
 const fileInput = ref(null);
+const existingImages = ref([]);
+const removeExistingImage = (idx) => {
+  existingImages.value.splice(idx, 1);
+};
+
+const categorySelection = ref('');
+const customCategory = ref('');
+
+const onCategorySelectChange = () => {
+  if (categorySelection.value !== 'custom') {
+    formData.value.category = categorySelection.value;
+  } else {
+    formData.value.category = customCategory.value;
+  }
+};
+
+watch(customCategory, (newVal) => {
+  if (categorySelection.value === 'custom') {
+    formData.value.category = newVal;
+  }
+});
 
 const api = axios.create({
   baseURL: `${API_URL}/api`,
@@ -386,8 +434,8 @@ const showToast = (message, type = 'success') => {
 };
 
 const categoryLabel = (cat) => {
-  const map = { mural: 'Mural Artístico', ads: 'Publicidade & Branding', portrait: 'Retratos', mosaic: 'Projeto Decorativo' };
-  return map[cat] || 'Sem Categoria';
+  const map = { mural: 'Mural Artístico', ads: 'Publicidade & Branding', portrait: 'Retrato Surreal', mosaic: 'Projeto Decorativo' };
+  return map[cat] || cat || 'Sem Categoria';
 };
 
 const formatDate = (date) => new Date(date).toLocaleDateString();
@@ -424,6 +472,9 @@ const openModal = () => {
   isEditing.value = false;
   currentId.value = null;
   formData.value = { title: '', category: '', description: '' };
+  categorySelection.value = '';
+  customCategory.value = '';
+  existingImages.value = [];
   selectedFiles.value = [];
   saveError.value = '';
   showModal.value = true;
@@ -490,6 +541,17 @@ const editProject = (project) => {
     category: project.category, 
     description: project.description 
   };
+  
+  const standardCategories = ['mural', 'ads', 'portrait', 'mosaic'];
+  if (standardCategories.includes(project.category)) {
+    categorySelection.value = project.category;
+    customCategory.value = '';
+  } else {
+    categorySelection.value = 'custom';
+    customCategory.value = project.category || '';
+  }
+  
+  existingImages.value = [...(project.images || [])];
   selectedFiles.value = [];
   saveError.value = '';
   showModal.value = true;
@@ -503,6 +565,10 @@ const saveProject = async () => {
   fd.append('title', formData.value.title);
   fd.append('category', formData.value.category);
   fd.append('description', formData.value.description || '');
+  
+  if (isEditing.value) {
+    fd.append('existingImages', JSON.stringify(existingImages.value));
+  }
   
   if (selectedFiles.value.length > 0) {
     selectedFiles.value.forEach(file => fd.append('images', file));
@@ -803,19 +869,85 @@ onMounted(fetchData);
 .loading-state { text-align: center; padding: 50px; font-size: 1.2rem; color: var(--accent-primary); }
 
 /* Modal */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(5px); }
-.modal-card { background: #1a1a20; padding: 40px; border-radius: 24px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: flex-start; justify-content: center; z-index: 1000; backdrop-filter: blur(5px); padding: 30px 20px; overflow-y: auto; }
+.modal-card { background: #1a1a20; padding: 40px; border-radius: 24px; width: 100%; max-width: 560px; border: 1px solid rgba(255,255,255,0.05); }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
 .modal-close { background: transparent; border: none; color: #555; font-size: 1.5rem; cursor: pointer; }
+
+/* Form layout - single column by default */
 .project-form { display: flex; flex-direction: column; gap: 20px; }
+.form-column-left, .form-column-right { display: flex; flex-direction: column; gap: 20px; }
+.form-actions-wrapper { display: flex; justify-content: flex-end; gap: 15px; }
+
+/* Two-column layout on desktop */
+@media (min-width: 992px) {
+  .modal-card { max-width: 1000px; }
+  .project-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 30px;
+    row-gap: 0;
+  }
+  .form-column-left { grid-column: 1; grid-row: 1; }
+  .form-column-right { grid-column: 2; grid-row: 1; }
+  .form-actions-wrapper { grid-column: 1 / -1; grid-row: 2; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 24px; margin-top: 10px; }
+}
+
 .form-group label { font-size: 0.8rem; color: #888; margin-bottom: 8px; display: block; }
-.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 14px; background: #131317; border: 1px solid #333; border-radius: 12px; color: #fff; font-size: 1rem; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 14px; background: #131317; border: 1px solid #333; border-radius: 12px; color: #fff; font-size: 1rem; box-sizing: border-box; }
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent-primary); outline: none; }
 .form-group textarea { resize: vertical; min-height: 120px; }
 .file-drop { border: 2px dashed #333; padding: 20px; text-align: center; border-radius: 12px; cursor: pointer; }
 .file-drop:hover { border-color: var(--accent-primary); }
 .edit-note { font-size: 0.8rem; color: #ffb700; background: rgba(255, 183, 0, 0.1); padding: 10px; border-radius: 8px; line-height: 1.4; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 10px; }
+
+/* Existing Images Grid */
+.existing-images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 10px;
+}
+
+.existing-image-thumb {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  aspect-ratio: 1;
+  border: 2px solid rgba(255,255,255,0.08);
+  transition: border-color 0.2s;
+}
+
+.existing-image-thumb:hover {
+  border-color: #ef4444;
+}
+
+.existing-image-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.btn-remove-existing {
+  position: absolute;
+  inset: 0;
+  background: rgba(239, 68, 68, 0);
+  border: none;
+  color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.existing-image-thumb:hover .btn-remove-existing {
+  background: rgba(239, 68, 68, 0.75);
+  color: #fff;
+}
 
 /* Messages */
 .message-card { background: #1a1a20; padding: 25px; border-radius: 16px; margin-bottom: 20px; border-left: 4px solid var(--accent-primary); }

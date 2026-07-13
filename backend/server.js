@@ -369,7 +369,7 @@ app.delete('/api/admin/projects/:id', protect, async (req, res) => {
 // Admin: Update Project
 app.put('/api/admin/projects/:id', protect, upload.array('images', 5), async (req, res) => {
     try {
-        const { title, category, description } = req.body;
+        let { title, category, description, existingImages } = req.body;
 
         // Criamos o objeto de atualização apenas com o que foi enviado
         let updateData = {};
@@ -377,12 +377,28 @@ app.put('/api/admin/projects/:id', protect, upload.array('images', 5), async (re
         if (category) updateData.category = category;
         if (description !== undefined) updateData.description = description;
 
+        // Se o utilizador enviou o estado atual das imagens existentes
+        if (existingImages !== undefined) {
+            if (typeof existingImages === 'string') {
+                try {
+                    existingImages = JSON.parse(existingImages);
+                } catch (e) {
+                    existingImages = existingImages ? [existingImages] : [];
+                }
+            }
+            updateData.images = existingImages;
+        }
+
         // Se houver novas imagens, anexamos
         if (req.files && req.files.length > 0) {
             const newImages = req.files.map(file => file.path);
-            const project = await Project.findById(req.params.id);
-            if (project) {
-                updateData.images = [...(project.images || []), ...newImages];
+            if (updateData.images !== undefined) {
+                updateData.images = [...updateData.images, ...newImages];
+            } else {
+                const project = await Project.findById(req.params.id);
+                if (project) {
+                    updateData.images = [...(project.images || []), ...newImages];
+                }
             }
         }
 
