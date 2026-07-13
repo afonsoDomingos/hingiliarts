@@ -42,7 +42,7 @@ import { ref, onMounted, onUnmounted } from 'vue';
 
 const isScrolled = ref(false);
 const isMenuActive = ref(false);
-const isDark = ref(true);
+const isDark = ref(false);
 
 const navLinks = [
   { text: 'Início', href: '/' },
@@ -53,16 +53,28 @@ const navLinks = [
   { text: 'Contactos', href: '/#contact' }
 ];
 
-const toggleTheme = () => {
-  isDark.value = !isDark.value;
-  const theme = isDark.value ? 'dark' : 'light';
-  document.body.setAttribute('data-theme', isDark.value ? '' : 'light');
-  if (!isDark.value) {
-    document.body.setAttribute('data-theme', 'light');
-  } else {
+// Determinar se é dia (6h - 18h) ou noite (18h - 6h)
+const isNightTime = () => {
+  const hour = new Date().getHours();
+  return hour < 6 || hour >= 18;
+};
+
+// Aplicar tema ao documento
+const applyTheme = (dark) => {
+  isDark.value = dark;
+  if (dark) {
     document.body.removeAttribute('data-theme');
+  } else {
+    document.body.setAttribute('data-theme', 'light');
   }
-  localStorage.setItem('hingili-theme', theme);
+};
+
+// Toggle manual — guarda a preferência do utilizador
+const toggleTheme = () => {
+  const newDark = !isDark.value;
+  applyTheme(newDark);
+  localStorage.setItem('hingili-theme', newDark ? 'dark' : 'light');
+  localStorage.setItem('hingili-theme-manual', 'true');
 };
 
 const toggleMenu = () => {
@@ -79,19 +91,34 @@ const handleScroll = () => {
   isScrolled.value = window.scrollY > 50;
 };
 
+let themeInterval = null;
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
-  
-  // Restaurar tema guardado
+
   const savedTheme = localStorage.getItem('hingili-theme');
-  if (savedTheme === 'light') {
-    isDark.value = false;
-    document.body.setAttribute('data-theme', 'light');
+  const isManual = localStorage.getItem('hingili-theme-manual') === 'true';
+
+  if (isManual && savedTheme) {
+    // Respeitar a escolha manual do utilizador
+    applyTheme(savedTheme === 'dark');
+  } else {
+    // Aplicar tema automático baseado na hora
+    applyTheme(isNightTime());
   }
+
+  // Verificar a hora a cada minuto para alternar automaticamente (se não houver override manual)
+  themeInterval = setInterval(() => {
+    const isManualNow = localStorage.getItem('hingili-theme-manual') === 'true';
+    if (!isManualNow) {
+      applyTheme(isNightTime());
+    }
+  }, 60 * 1000);
 });
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll);
+  if (themeInterval) clearInterval(themeInterval);
 });
 </script>
 
