@@ -16,6 +16,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   </head>
   <body>
+    <script>
+      (function() {
+        const savedTheme = localStorage.getItem('hingili-theme');
+        const isManual = localStorage.getItem('hingili-theme-manual') === 'true';
+        const hour = new Date().getHours();
+        const isNight = hour < 6 || hour >= 18;
+        const useDark = isManual && savedTheme ? (savedTheme === 'dark') : isNight;
+        if (!useDark) {
+          document.body.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>

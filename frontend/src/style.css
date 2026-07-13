@@ -247,6 +247,10 @@ body[data-theme="light"] .footer-logo-img {
     filter: invert(1) brightness(0.2);
 }
 
+body[data-theme="light"] .header.scrolled .logo-img {
+    filter: invert(1) brightness(0.2);
+}
+
 /* Theme toggle button */
 .theme-toggle {
     width: 44px;
