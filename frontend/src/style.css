@@ -1095,6 +1095,15 @@ img {
     box-shadow: 0 12px 24px rgba(37, 211, 102, 0.4);
 }
 
+.float-scroll-up {
+    background: var(--gradient-primary);
+}
+
+.float-scroll-up:hover {
+    transform: translateY(-4px) scale(1.1);
+    box-shadow: 0 12px 28px rgba(229, 46, 113, 0.4);
+}
+
 /* ====== Footer ====== */
 .footer {
     padding-top: 100px;

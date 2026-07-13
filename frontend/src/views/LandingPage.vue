@@ -64,6 +64,9 @@
 
     <!-- Floating Buttons -->
     <div class="floating-controls">
+      <button v-if="showScrollTop" @click="scrollToTop" class="float-btn float-scroll-up" title="Voltar ao Topo">
+        <i class="fa-solid fa-arrow-up"></i>
+      </button>
       <router-link to="/auctions" class="float-btn float-auction" title="Leilões">
         <i class="fa-solid fa-gavel"></i>
       </router-link>
