@@ -105,7 +105,7 @@ const services = [
   font-family: var(--font-serif);
   font-size: 1.6rem;
   margin-bottom: 15px;
-  color: #fff;
+  color: var(--text-primary);
   z-index: 2;
 }
 

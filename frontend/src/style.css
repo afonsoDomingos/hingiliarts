@@ -33,63 +33,218 @@
 
 /* ====== Tema Claro (Light Mode) ====== */
 body[data-theme="light"] {
-    --bg-main: #f4f4f7;
-    --bg-secondary: #e8e8ef;
+    --bg-main: #f5f5f8;
+    --bg-secondary: #eaeaef;
     --bg-accent: #dcdce8;
-    --glass: rgba(0, 0, 0, 0.03);
-    --glass-border: rgba(0, 0, 0, 0.1);
+    --glass: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(0, 0, 0, 0.09);
 
-    --text-primary: #111118;
-    --text-secondary: #44444f;
-    --text-dim: #888899;
+    --text-primary: #0f0f18;
+    --text-secondary: #3f3f50;
+    --text-dim: #787890;
 
-    --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.12);
+    --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.10);
 }
 
-body[data-theme="light"] .glow-blob {
-    opacity: 0.15;
-}
-
-body[data-theme="light"] .portfolio-card,
-body[data-theme="light"] .hl-item,
-body[data-theme="light"] .service-card {
-    background: rgba(255, 255, 255, 0.7);
-    border-color: rgba(0, 0, 0, 0.1);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
-}
-
-body[data-theme="light"] .portfolio-info {
-    background: rgba(255, 255, 255, 0.92);
-}
-
-body[data-theme="light"] .p-title,
-body[data-theme="light"] .section-title {
-    color: #111118;
-}
-
-body[data-theme="light"] .header.scrolled {
-    background-color: rgba(244, 244, 247, 0.95);
-    border-bottom-color: rgba(0,0,0,0.08);
-}
-
-body[data-theme="light"] .nav-link {
-    color: #44444f;
-}
-
-body[data-theme="light"] .nav-link:hover {
-    color: #111118;
-}
-
-body[data-theme="light"] .hb-inner span {
-    background: #111118;
-}
-
-body[data-theme="light"] .nav-list {
-    background: #e8e8ef;
+/* ── Body & Scrollbar ── */
+body[data-theme="light"] {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
 }
 
 body[data-theme="light"] ::-webkit-scrollbar-track {
     background: var(--bg-secondary);
+}
+
+/* ── Glow blobs: reduzidos para não manchar o fundo claro ── */
+body[data-theme="light"] .glow-blob {
+    opacity: 0.12;
+}
+
+/* ── Navbar ── */
+body[data-theme="light"] .header.scrolled {
+    background-color: rgba(245, 245, 248, 0.95);
+    backdrop-filter: blur(16px);
+    border-bottom-color: rgba(0, 0, 0, 0.07);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.07);
+}
+
+body[data-theme="light"] .nav-link {
+    color: #3f3f50;
+}
+
+body[data-theme="light"] .nav-link:hover {
+    color: #0f0f18;
+}
+
+body[data-theme="light"] .hb-inner span {
+    background: #0f0f18;
+}
+
+body[data-theme="light"] .nav-list {
+    background: #eaeaef;
+}
+
+/* ── Hero: já tem imagem de fundo, funciona bem nos dois temas ── */
+
+/* ── About ── */
+body[data-theme="light"] .stats-glass {
+    background: rgba(255, 255, 255, 0.75);
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+body[data-theme="light"] .about-text {
+    color: #3f3f50;
+}
+
+/* ── Services ── */
+body[data-theme="light"] .service-card {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+body[data-theme="light"] .service-card:hover {
+    background: #ffffff;
+    border-color: rgba(14, 165, 233, 0.3);
+    box-shadow: 0 16px 40px rgba(14, 165, 233, 0.12);
+}
+
+body[data-theme="light"] .s-title {
+    color: #0f0f18;
+}
+
+body[data-theme="light"] .s-text {
+    color: #3f3f50;
+}
+
+body[data-theme="light"] .s-icon-box {
+    background: rgba(14, 165, 233, 0.08);
+}
+
+/* ── Portfolio ── */
+body[data-theme="light"] .portfolio-card {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.07);
+}
+
+body[data-theme="light"] .portfolio-info {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+body[data-theme="light"] .p-title {
+    color: #0f0f18;
+}
+
+body[data-theme="light"] .p-category {
+    color: #3f3f50;
+}
+
+body[data-theme="light"] .filter-btn {
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #3f3f50;
+}
+
+body[data-theme="light"] .filter-btn:hover,
+body[data-theme="light"] .filter-btn.active {
+    background: var(--gradient-primary);
+    color: #fff;
+    border-color: transparent;
+}
+
+/* ── Highlight items (portfolio lightbox overlay, hl-item) ── */
+body[data-theme="light"] .hl-item {
+    background: rgba(255, 255, 255, 0.75);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* ── Section titles & subtitles ── */
+body[data-theme="light"] .section-title {
+    color: #0f0f18;
+}
+
+body[data-theme="light"] .sub-title {
+    color: var(--accent-essence);
+}
+
+/* ── Visitor Mural ── */
+body[data-theme="light"] .mural-tag {
+    background: rgba(255, 255, 255, 0.75);
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #0f0f18;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+}
+
+body[data-theme="light"] .mural-input-wrapper input,
+body[data-theme="light"] .mural-input-wrapper textarea {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #0f0f18;
+}
+
+body[data-theme="light"] .mural-input-wrapper input::placeholder,
+body[data-theme="light"] .mural-input-wrapper textarea::placeholder {
+    color: #787890;
+}
+
+/* ── Footer ── */
+body[data-theme="light"] .footer {
+    background: var(--bg-secondary);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body[data-theme="light"] .footer h4 {
+    color: #0f0f18;
+}
+
+body[data-theme="light"] .footer p,
+body[data-theme="light"] .contact-list li {
+    color: #3f3f50;
+}
+
+body[data-theme="light"] .contact-list i {
+    color: var(--accent-essence);
+}
+
+body[data-theme="light"] .socials a {
+    background: rgba(0, 0, 0, 0.06);
+    color: #3f3f50;
+}
+
+body[data-theme="light"] .socials a:hover {
+    background: var(--gradient-essence);
+    color: #fff;
+}
+
+body[data-theme="light"] .footer-bottom {
+    background: rgba(0, 0, 0, 0.05);
+    border-top: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+body[data-theme="light"] .footer-bottom p {
+    color: #3f3f50;
+}
+
+body[data-theme="light"] .admin-link-subtle {
+    color: rgba(0, 0, 0, 0.25);
+}
+
+body[data-theme="light"] .contact-form input,
+body[data-theme="light"] .contact-form textarea {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #0f0f18;
+}
+
+body[data-theme="light"] .contact-form input::placeholder,
+body[data-theme="light"] .contact-form textarea::placeholder {
+    color: #787890;
+}
+
+body[data-theme="light"] .footer-logo-img {
+    filter: invert(1) brightness(0.2);
 }
 
 /* Theme toggle button */
