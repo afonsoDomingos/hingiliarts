@@ -16,6 +16,7 @@ const Message = require('./models/Message');
 const User = require('./models/User');
 const Auction = require('./models/Auction');
 const VisitorStamp = require('./models/VisitorStamp');
+const Biography = require('./models/Biography');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -104,6 +105,19 @@ const seedAdmin = async () => {
 seedAdmin();
 
 // --- Routes ---
+
+// Public: Get Biography (singleton — auto-seeds defaults on first call)
+app.get('/api/biography', async (req, res) => {
+    try {
+        let bio = await Biography.findOne();
+        if (!bio) {
+            bio = await Biography.create({});
+        }
+        res.json(bio);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
 
 // Public: Get Portfolio
 app.get('/api/portfolio', async (req, res) => {
@@ -556,6 +570,23 @@ app.delete('/api/admin/stamps/:id', protect, async (req, res) => {
     }
 });
 
+// Admin: Update Biography
+app.put('/api/admin/biography', protect, async (req, res) => {
+    try {
+        let bio = await Biography.findOne();
+        if (!bio) {
+            bio = new Biography(req.body);
+        } else {
+            Object.assign(bio, req.body);
+        }
+        await bio.save();
+        res.json(bio);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT} 🚀`);
 });
+

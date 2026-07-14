@@ -10,42 +10,47 @@
         <div class="divider align-center"></div>
       </div>
 
+      <!-- Loading -->
+      <div v-if="isLoading" class="bio-loading">
+        <i class="fa-solid fa-circle-notch fa-spin"></i>
+      </div>
+
       <!-- Layout principal: foto + texto -->
-      <div class="bio-grid">
+      <div v-else class="bio-grid">
         <!-- Coluna esquerda: foto + destaques -->
         <div class="bio-left reveal">
           <div class="bio-photo-wrap">
             <div class="bio-photo-frame">
-              <img src="/assets/img/Banner01.jpg" alt="Hingili — Artista Plástico" class="bio-photo" />
+              <img src="/assets/img/Banner01.jpg" :alt="bio.artistName + ' — Artista Plástico'" class="bio-photo" />
             </div>
             <div class="bio-name-card">
-              <span class="bio-real-name">Lars dos Santos Chambule</span>
-              <span class="bio-art-name">Hingili</span>
-              <span class="bio-origin">Maputo, Moçambique</span>
+              <span class="bio-real-name">{{ bio.realName }}</span>
+              <span class="bio-art-name">{{ bio.artistName }}</span>
+              <span class="bio-origin">{{ bio.origin }}</span>
             </div>
           </div>
 
           <!-- Factos rápidos -->
           <div class="bio-facts">
+            <div class="fact-item" v-if="bio.awards && bio.awards.length">
+              <i class="fa-solid fa-trophy fact-icon"></i>
+              <div>
+                <span class="fact-label">Prémio em Destaque</span>
+                <span class="fact-value">{{ bio.awards[0].year }} — {{ bio.awards[0].description }}</span>
+              </div>
+            </div>
+            <div class="fact-item" v-if="bio.residencies && bio.residencies.length">
+              <i class="fa-solid fa-globe fact-icon"></i>
+              <div>
+                <span class="fact-label">Participação Internacional</span>
+                <span class="fact-value">{{ bio.residencies[0].description }}</span>
+              </div>
+            </div>
             <div class="fact-item">
               <i class="fa-solid fa-palette fact-icon"></i>
               <div>
                 <span class="fact-label">Início da Formação</span>
                 <span class="fact-value">2009 — Casa da Cultura do Alto Maé</span>
-              </div>
-            </div>
-            <div class="fact-item">
-              <i class="fa-solid fa-trophy fact-icon"></i>
-              <div>
-                <span class="fact-label">Prémio</span>
-                <span class="fact-value">3º Lugar — Concurso Municipal Juventude (2022)</span>
-              </div>
-            </div>
-            <div class="fact-item">
-              <i class="fa-solid fa-globe fact-icon"></i>
-              <div>
-                <span class="fact-label">Representação Internacional</span>
-                <span class="fact-value">Bienal da CPLP (2015) — Desenho & Pintura</span>
               </div>
             </div>
             <div class="fact-item">
@@ -74,31 +79,19 @@
 
           <!-- Tab: Biografia -->
           <div v-show="activeTab === 'bio'" class="bio-tab-content">
-            <p class="bio-para">
-              <strong>Hingili</strong>, nome artístico de Lars dos Santos Chambule, é um artista plástico moçambicano, natural de Maputo. Desde jovem demonstrou paixão pelas artes visuais, iniciando a sua formação artística em <strong>2009</strong> na <em>Casa da Cultura do Alto Maé</em>.
-            </p>
-            <p class="bio-para">
-              Artista multifacetado, Hingili tem-se destacado na produção de <strong>murais com forte carga simbólica e social</strong>, utilizando técnicas mistas como relevo com cimento, isopor, gesso e acrílico sobre parede ou tela, assim como assemblagem.
-            </p>
-            <p class="bio-para">
-              Em <strong>2025</strong>, participou de duas residências artísticas promovidas pelo <em>Tamos Juntos – Colectivo de Artes e Justiça Climática</em>, onde estreou na técnica de assemblagem abordando injustiça social e justiça climática em escolas moçambicanas.
-            </p>
-            <p class="bio-para">
-              De 2009 a 2018 trabalhou como colaborador em empresas de pintura publicitária para campanhas de várias marcas em Moçambique. Em <strong>2019</strong> decide difundir o seu talento, expandindo a pintura publicitária às zonas sul, centro e norte do país, tendo em <strong>2021</strong> registado a <strong>Hingili Artes Lda.</strong>
-            </p>
-            <p class="bio-para">
-              Em 2025, pintou junto com a sua equipa os murais de campanha <em>TESTA–LÁ HIV</em> nos municípios de KaMavota e Marracuene, e realizou pinturas sacras com destaque para o mural de <em>Jesus e São Pedro No Mar</em>, na Igreja de São Pedro de KaTembe, Guacheni, Cidade de Maputo.
-            </p>
-            <p class="bio-para">
-              Além da produção de obras visuais, Hingili actua em <strong>workshops de artes plásticas e poesia</strong> nas línguas Ronga, Changana e Português, promovendo o diálogo entre arte, cultura e identidade moçambicana.
-            </p>
+            <p
+              v-for="(para, idx) in bio.bioText"
+              :key="idx"
+              class="bio-para"
+              v-html="para"
+            ></p>
           </div>
 
           <!-- Tab: Obras em Destaque -->
           <div v-show="activeTab === 'obras'" class="bio-tab-content">
             <p class="bio-section-intro">Entre as obras marcantes estão:</p>
             <div class="works-list">
-              <div v-for="work in majorWorks" :key="work.title" class="work-item">
+              <div v-for="work in bio.majorWorks" :key="work.title" class="work-item">
                 <span class="work-year">{{ work.year }}</span>
                 <div class="work-info">
                   <span class="work-title">{{ work.title }}</span>
@@ -106,52 +99,37 @@
                 </div>
               </div>
             </div>
-            <p class="bio-para bio-note">
-              Os quadros únicos <em>(In)verdades</em>, <em>As controvérsias da esperança</em> e <em>O que vês em mim?</em>, com forte teor político-religioso, social e nacional, têm repercutido além-fronteiras.
-            </p>
           </div>
 
           <!-- Tab: Currículo -->
           <div v-show="activeTab === 'cv'" class="bio-tab-content">
-            <div class="cv-section">
+            <div class="cv-section" v-if="bio.awards && bio.awards.length">
               <h4 class="cv-section-title"><i class="fa-solid fa-star"></i> Distinções & Prémios</h4>
-              <div class="cv-item">
-                <span class="cv-year">2022</span>
-                <p>3º lugar na categoria de criação artística na <strong>1ª Edição do Concurso Municipal Juventude</strong></p>
+              <div class="cv-item" v-for="award in bio.awards" :key="award.year + award.description">
+                <span class="cv-year">{{ award.year }}</span>
+                <p>{{ award.description }}</p>
               </div>
             </div>
 
-            <div class="cv-section">
-              <h4 class="cv-section-title"><i class="fa-solid fa-earth-africa"></i> Participações Internacionais</h4>
-              <div class="cv-item">
-                <span class="cv-year">2015</span>
-                <p><strong>Bienal da CPLP</strong> — Representou Moçambique na categoria de Desenho e Pintura</p>
-              </div>
-              <div class="cv-item">
-                <span class="cv-year">—</span>
-                <p><strong>Mostra Nacional de Jovens Criadores</strong></p>
+            <div class="cv-section" v-if="bio.residencies && bio.residencies.length">
+              <h4 class="cv-section-title"><i class="fa-solid fa-earth-africa"></i> Participações & Residências</h4>
+              <div class="cv-item" v-for="res in bio.residencies" :key="res.year + res.description">
+                <span class="cv-year">{{ res.year }}</span>
+                <p>{{ res.description }}</p>
               </div>
             </div>
 
-            <div class="cv-section">
-              <h4 class="cv-section-title"><i class="fa-solid fa-seedling"></i> Residências Artísticas</h4>
-              <div class="cv-item">
-                <span class="cv-year">2025</span>
-                <p>Duas residências promovidas pelo <strong>Tamos Juntos – Colectivo de Artes e Justiça Climática</strong> — Estreia na técnica de assemblagem</p>
-              </div>
-            </div>
-
-            <div class="cv-section">
+            <div class="cv-section" v-if="bio.techniques && bio.techniques.length">
               <h4 class="cv-section-title"><i class="fa-solid fa-brush"></i> Técnicas & Especialidades</h4>
               <div class="cv-tags">
-                <span class="cv-tag" v-for="t in techniques" :key="t">{{ t }}</span>
+                <span class="cv-tag" v-for="t in bio.techniques" :key="t">{{ t }}</span>
               </div>
             </div>
 
-            <div class="cv-section">
+            <div class="cv-section" v-if="bio.languages && bio.languages.length">
               <h4 class="cv-section-title"><i class="fa-solid fa-language"></i> Línguas de Trabalho</h4>
               <div class="cv-tags">
-                <span class="cv-tag" v-for="l in languages" :key="l">{{ l }}</span>
+                <span class="cv-tag" v-for="l in bio.languages" :key="l">{{ l }}</span>
               </div>
             </div>
           </div>
@@ -161,8 +139,11 @@
   </section>
 </template>
 
+
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import API_URL from '../config/api.js';
 
 const activeTab = ref('bio');
 
@@ -172,32 +153,45 @@ const tabs = [
   { id: 'cv',    label: 'Currículo',         icon: 'fa-solid fa-scroll' },
 ];
 
-const majorWorks = [
-  { year: '2026', title: 'E se fosse o seu lar?', desc: 'Mural' },
-  { year: '2025', title: 'Violência cibernética baseada no género', desc: 'Mural' },
-  { year: '2025', title: 'Ilícito', desc: 'Mural' },
-  { year: '2025', title: 'Utopia sonora', desc: 'Mural' },
-  { year: '2025', title: 'Jesus e São Pedro No Mar', desc: 'Pintura Sacra — Igreja de São Pedro de KaTembe' },
-  { year: '2024', title: 'Patinagem em linha', desc: 'Mural' },
-  { year: '2023', title: 'Comunicando com a comunidade', desc: 'Mural' },
-  { year: '2021', title: 'Heróis da pátria', desc: 'Mural' },
-  { year: '—',    title: '(In)verdades', desc: 'Técnica mista — Relevo & Acrílico' },
-  { year: '—',    title: 'As controvérsias da esperança', desc: 'Técnica mista' },
-  { year: '—',    title: 'O que vês em mim?', desc: 'Técnica mista' },
-];
+// Dados reactivos vindos da API
+const bio = ref({
+  artistName: 'Hingili',
+  realName: 'Lars dos Santos Chambule',
+  origin: 'Maputo, Moçambique',
+  bioText: [],
+  majorWorks: [],
+  awards: [],
+  residencies: [],
+  techniques: [],
+  languages: []
+});
 
-const techniques = [
-  'Relevo com Cimento', 'Assemblagem', 'Acrílico sobre Tela', 'Pintura Mural',
-  'Gesso & Isopor', 'Arte Ecológica', 'Pintura Publicitária', 'Pintura Sacra',
-  'Decoração de Interiores', 'Efeito Rocha',
-];
+const isLoading = ref(true);
 
-const languages = ['Português', 'Ronga', 'Changana'];
+const fetchBiography = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/api/biography`);
+    bio.value = res.data;
+  } catch (err) {
+    console.warn('Não foi possível carregar biografia da API, usando dados padrão.');
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(fetchBiography);
 </script>
 
 <style scoped>
 .biography {
   background: var(--bg-main);
+}
+
+.bio-loading {
+  text-align: center;
+  padding: 80px 0;
+  font-size: 2rem;
+  color: var(--text-dim);
 }
 
 .bio-glow {
