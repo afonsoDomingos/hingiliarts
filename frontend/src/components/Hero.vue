@@ -32,8 +32,10 @@
 
         <!-- Título principal -->
         <h1 class="hero-title">
-          <span class="title-line">Nossa Arte,</span>
-          <span class="title-line title-accent">Sua <em>Realização</em></span>
+          <span class="title-solid">Nossa Arte,</span>
+          <span class="title-bottom">
+            <span class="title-gradient">Sua </span><span class="title-outline">Realização</span>
+          </span>
         </h1>
 
         <!-- Subtítulo -->
@@ -258,31 +260,71 @@ const stats = [
 
 /* ── Título ── */
 .hero-title {
-  font-family: var(--font-serif);
-  font-size: clamp(3rem, 6.5vw, 5.5rem);
-  line-height: 1.08;
-  font-weight: 700;
+  font-family: 'Bebas Neue', var(--font-serif), sans-serif;
+  font-size: clamp(4.5rem, 10vw, 10rem);
+  line-height: 0.95;
+  font-weight: 400; /* Bebas Neue is inherently bold */
+  letter-spacing: 2px;
   color: #fff;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.title-line {
+/* Linha 1 — branco sólido com sombra suave */
+.title-solid {
   display: block;
-  animation: fadeUp 1s ease-out both;
+  color: #fff;
+  text-shadow: 0 0 60px rgba(255,255,255,0.08);
+  animation: fadeUp 0.9s ease-out both;
 }
 
-.title-line:nth-child(2) { animation-delay: 0.1s; }
+/* Linha 2 — container flex */
+.title-bottom {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 12px;
+  animation: fadeUp 1s ease-out 0.12s both;
+}
 
-.title-accent em {
-  font-style: normal;
-  background: var(--gradient-primary);
+/* "Sua" — gradiente animado laranja → rosa */
+.title-gradient {
+  background: linear-gradient(90deg, #ff8a00, #e52e71, #ff8a00);
+  background-size: 200% auto;
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  animation: shimmerText 3s linear infinite;
+  filter: drop-shadow(0 0 20px rgba(255, 138, 0, 0.45));
 }
+
+@keyframes shimmerText {
+  0%   { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* "REALIZAÇÃO" — outline vazado com glow pulsante */
+.title-outline {
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.85);
+  text-stroke: 2px rgba(255, 255, 255, 0.85);
+  filter: drop-shadow(0 0 12px rgba(255,255,255,0.15));
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    -webkit-text-stroke-color: rgba(255, 255, 255, 0.85);
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.1));
+  }
+  50% {
+    -webkit-text-stroke-color: rgba(255, 200, 100, 0.95);
+    filter: drop-shadow(0 0 24px rgba(255,138,0,0.35));
+  }
+}
+
 
 /* ── Subtítulo ── */
 .hero-subtitle {
