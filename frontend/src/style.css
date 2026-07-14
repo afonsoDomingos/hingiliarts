@@ -523,31 +523,15 @@ img {
     background-size: cover;
     background-repeat: no-repeat;
     opacity: 0;
-    transition: opacity 1.5s ease-in-out;
+    transition: opacity 1.8s ease-in-out;
 }
 
+/* Slide active opacity controlled by Hero.vue scoped styles */
 .hero-slider .slide.active {
-    opacity: 0.5;
-    animation: zoomInOutSlide 10s forwards;
+    opacity: 1;
 }
 
-@keyframes zoomInOutSlide {
-    0% {
-        transform: scale(1);
-    }
-
-    100% {
-        transform: scale(1.1);
-    }
-}
-
-.hero::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(10, 10, 12, 0.8) 0%, rgba(10, 10, 12, 0.4) 50%, rgba(10, 10, 12, 1) 100%);
-    z-index: -1;
-}
+/* hero::after overlay moved to Hero.vue scoped */
 
 .hero-content {
     max-width: 800px;
