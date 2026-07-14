@@ -4,7 +4,9 @@
     <Hero />
     <About class="reveal" />
     <MissionVision class="reveal" />
+    <Biography class="reveal" />
     
+
     <!-- Highlights -->
     <section class="highlights reveal">
       <div class="container">
@@ -100,6 +102,7 @@ import Navbar from '../components/Navbar.vue';
 import Hero from '../components/Hero.vue';
 import About from '../components/About.vue';
 import MissionVision from '../components/MissionVision.vue';
+import Biography from '../components/Biography.vue';
 import Services from '../components/Services.vue';
 import Portfolio from '../components/Portfolio.vue';
 import VisitorMural from '../components/VisitorMural.vue';

@@ -58,11 +58,12 @@ const isMenuActive = ref(false);
 const isDark = ref(false);
 
 const navLinks = [
-  { text: 'Início', href: '/' },
-  { text: 'Sobre', href: '/#about' },
-  { text: 'Serviços', href: '/#services' },
+  { text: 'Início',    href: '/' },
+  { text: 'Sobre',     href: '/#about' },
+  { text: 'Biografia', href: '/#biografia' },
+  { text: 'Serviços',  href: '/#services' },
   { text: 'Portfólio', href: '/#portfolio' },
-  { text: 'Leilões', href: '/auctions' },
+  { text: 'Leilões',   href: '/auctions' },
   { text: 'Contactos', href: '/#contact' }
 ];
 
