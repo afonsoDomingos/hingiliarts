@@ -15,11 +15,6 @@
     <div class="hero-overlay"></div>
     <div class="hero-vignette"></div>
 
-    <!-- Linha decorativa lateral -->
-    <div class="hero-side-line">
-      <span class="side-text">Hingili Arts</span>
-    </div>
-
     <!-- Conteúdo principal -->
     <div class="container hero-body">
       <div class="hero-content">
@@ -40,8 +35,7 @@
 
         <!-- Subtítulo -->
         <p class="hero-subtitle">
-          Do mural urbano à sinalização corporativa de luxo.<br>
-          Visão artística aliada à execução técnica impecável.
+          Arte mural, publicidade e decoração em Moçambique.
         </p>
 
         <!-- Botões -->
@@ -53,25 +47,6 @@
             <i class="fa-solid fa-images"></i> Ver Portfólio
           </a>
         </div>
-
-        <!-- Stats rápidos -->
-        <div class="hero-stats">
-          <div class="h-stat" v-for="s in stats" :key="s.label">
-            <span class="h-stat-num">{{ s.num }}</span>
-            <span class="h-stat-label">{{ s.label }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Indicador de slide -->
-      <div class="slide-indicator">
-        <button
-          v-for="(slide, i) in slides"
-          :key="i"
-          :class="['slide-dot', { active: currentSlide === i }]"
-          @click="goToSlide(i)"
-          :aria-label="`Slide ${i + 1}`"
-        ></button>
       </div>
     </div>
 
@@ -109,11 +84,8 @@ onUnmounted(() => {
   if (interval) clearInterval(interval);
 });
 
-const stats = [
-  { num: '10+', label: 'Anos de Experiência' },
-  { num: '200+', label: 'Obras Realizadas' },
-  { num: '50+', label: 'Clientes Corporativos' },
-];
+const stats = [];
+
 </script>
 
 <style scoped>
@@ -181,38 +153,6 @@ const stats = [
   pointer-events: none;
 }
 
-/* ── Linha lateral decorativa ── */
-.hero-side-line {
-  position: absolute;
-  left: 28px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.hero-side-line::before,
-.hero-side-line::after {
-  content: '';
-  display: block;
-  width: 1px;
-  height: 80px;
-  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.25), transparent);
-}
-
-.side-text {
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 4px;
-  color: rgba(255,255,255,0.3);
-  text-transform: uppercase;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-}
-
 /* ── Corpo principal ── */
 .hero-body {
   position: relative;
@@ -221,12 +161,12 @@ const stats = [
   flex-direction: column;
   justify-content: center;
   padding-top: 100px;
-  padding-bottom: 120px;
-  gap: 40px;
+  padding-bottom: 100px;
+  gap: 20px;
 }
 
 .hero-content {
-  max-width: 760px;
+  max-width: 620px;
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -261,12 +201,12 @@ const stats = [
 /* ── Título ── */
 .hero-title {
   font-family: 'Bebas Neue', var(--font-serif), sans-serif;
-  font-size: clamp(4.5rem, 10vw, 10rem);
+  font-size: clamp(3rem, 6vw, 6.5rem);
   line-height: 0.95;
-  font-weight: 400; /* Bebas Neue is inherently bold */
+  font-weight: 400;
   letter-spacing: 2px;
   color: #fff;
-  margin-bottom: 28px;
+  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -328,11 +268,11 @@ const stats = [
 
 /* ── Subtítulo ── */
 .hero-subtitle {
-  font-size: clamp(1rem, 1.6vw, 1.15rem);
-  color: rgba(200, 200, 215, 0.80);
-  line-height: 1.75;
-  margin-bottom: 38px;
-  max-width: 520px;
+  font-size: clamp(0.88rem, 1.3vw, 1rem);
+  color: rgba(200, 200, 215, 0.70);
+  line-height: 1.65;
+  margin-bottom: 30px;
+  max-width: 440px;
   animation: fadeUp 1.1s ease-out 0.2s both;
 }
 
@@ -340,10 +280,9 @@ const stats = [
 .hero-btns {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   flex-wrap: wrap;
   animation: fadeUp 1.2s ease-out 0.3s both;
-  margin-bottom: 56px;
 }
 
 .btn-hero {
