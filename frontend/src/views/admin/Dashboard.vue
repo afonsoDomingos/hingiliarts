@@ -30,6 +30,9 @@
         <button @click="activeTab = 'mural'" :class="{ active: activeTab === 'mural' }">
           <i class="fa-solid fa-note-sticky"></i> <span>Mural</span>
         </button>
+        <button @click="activeTab = 'biography'" :class="{ active: activeTab === 'biography' }">
+          <i class="fa-solid fa-user-pen"></i> <span>Biografia</span>
+        </button>
       </nav>
       <div class="sidebar-footer">
         <p class="admin-user"><i class="fa-solid fa-user"></i> <span>{{ adminUser?.name || 'Admin' }}</span></p>
@@ -42,9 +45,9 @@
     <main class="content">
       <header class="content-header">
         <div>
-          <h1>{{ activeTab === 'projects' ? 'Gerir Portfólio' : activeTab === 'messages' ? 'Mensagens Recebidas' : activeTab === 'auctions' ? 'Gerir Leilões' : activeTab === 'admins' ? 'Admins' : 'Mural de Visitantes' }}</h1>
+          <h1>{{ activeTab === 'projects' ? 'Gerir Portfólio' : activeTab === 'messages' ? 'Mensagens Recebidas' : activeTab === 'auctions' ? 'Gerir Leilões' : activeTab === 'admins' ? 'Admins' : activeTab === 'biography' ? 'Editar Biografia' : 'Mural de Visitantes' }}</h1>
           <p class="sub-header">
-            {{ activeTab === 'projects' ? `${projects.length} projeto(s)` : activeTab === 'messages' ? `${messages.length} mensagem(ns)` : activeTab === 'auctions' ? `${auctions.length} leilão(ões)` : activeTab === 'admins' ? `${users.length} administrador(es)` : `${stampsAdmin.length} carimbo(s)` }}
+            {{ activeTab === 'projects' ? `${projects.length} projeto(s)` : activeTab === 'messages' ? `${messages.length} mensagem(ns)` : activeTab === 'auctions' ? `${auctions.length} leilão(ões)` : activeTab === 'admins' ? `${users.length} administrador(es)` : activeTab === 'biography' ? '' : `${stampsAdmin.length} carimbo(s)` }}
           </p>
         </div>
         <button v-if="activeTab === 'projects'" @click="openModal()" class="btn btn-primary">
@@ -193,6 +196,118 @@
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section v-else-if="activeTab === 'biography'" class="dashboard-section">
+        <div class="bio-editor">
+          <!-- Info básica -->
+          <div class="bio-editor-group">
+            <h3 class="bio-editor-title"><i class="fa-solid fa-id-card"></i> Informação Básica</h3>
+            <div class="bio-editor-grid">
+              <div class="form-group">
+                <label>Nome Artístico</label>
+                <input v-model="bioForm.artistName" type="text" placeholder="Ex: Hingili">
+              </div>
+              <div class="form-group">
+                <label>Nome Real</label>
+                <input v-model="bioForm.realName" type="text" placeholder="Ex: Lars dos Santos Chambule">
+              </div>
+              <div class="form-group">
+                <label>Origem</label>
+                <input v-model="bioForm.origin" type="text" placeholder="Ex: Maputo, Moçambique">
+              </div>
+            </div>
+          </div>
+
+          <!-- Texto da Bio -->
+          <div class="bio-editor-group">
+            <div class="bio-editor-group-header">
+              <h3 class="bio-editor-title"><i class="fa-solid fa-align-left"></i> Parágrafos da Biografia</h3>
+              <button type="button" class="btn-add-item" @click="addBioPara"><i class="fa-solid fa-plus"></i> Adicionar Parágrafo</button>
+            </div>
+            <div v-for="(para, idx) in bioForm.bioText" :key="idx" class="bio-para-row">
+              <textarea v-model="bioForm.bioText[idx]" rows="3" :placeholder="`Parágrafo ${idx + 1}...`"></textarea>
+              <button type="button" class="btn-remove-item" @click="bioForm.bioText.splice(idx, 1)" title="Remover"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+
+          <!-- Obras em Destaque -->
+          <div class="bio-editor-group">
+            <div class="bio-editor-group-header">
+              <h3 class="bio-editor-title"><i class="fa-solid fa-image"></i> Obras em Destaque</h3>
+              <button type="button" class="btn-add-item" @click="addWork"><i class="fa-solid fa-plus"></i> Adicionar Obra</button>
+            </div>
+            <div v-for="(work, idx) in bioForm.majorWorks" :key="idx" class="work-row">
+              <input v-model="work.year" type="text" placeholder="Ano" class="work-year-input">
+              <input v-model="work.title" type="text" placeholder="Título da obra">
+              <input v-model="work.desc" type="text" placeholder="Descrição curta (Ex: Mural)">
+              <button type="button" class="btn-remove-item" @click="bioForm.majorWorks.splice(idx, 1)" title="Remover"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+
+          <!-- Prémios -->
+          <div class="bio-editor-group">
+            <div class="bio-editor-group-header">
+              <h3 class="bio-editor-title"><i class="fa-solid fa-trophy"></i> Prémios &amp; Participações</h3>
+              <button type="button" class="btn-add-item" @click="addAward"><i class="fa-solid fa-plus"></i> Adicionar</button>
+            </div>
+            <div v-for="(award, idx) in bioForm.awards" :key="idx" class="work-row">
+              <input v-model="award.year" type="text" placeholder="Ano" class="work-year-input">
+              <input v-model="award.description" type="text" placeholder="Descrição">
+              <button type="button" class="btn-remove-item" @click="bioForm.awards.splice(idx, 1)" title="Remover"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+
+          <!-- Residências -->
+          <div class="bio-editor-group">
+            <div class="bio-editor-group-header">
+              <h3 class="bio-editor-title"><i class="fa-solid fa-seedling"></i> Residências &amp; Exposições</h3>
+              <button type="button" class="btn-add-item" @click="addResidency"><i class="fa-solid fa-plus"></i> Adicionar</button>
+            </div>
+            <div v-for="(res, idx) in bioForm.residencies" :key="idx" class="work-row">
+              <input v-model="res.year" type="text" placeholder="Ano" class="work-year-input">
+              <input v-model="res.description" type="text" placeholder="Descrição">
+              <button type="button" class="btn-remove-item" @click="bioForm.residencies.splice(idx, 1)" title="Remover"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+
+          <!-- Técnicas -->
+          <div class="bio-editor-group">
+            <div class="bio-editor-group-header">
+              <h3 class="bio-editor-title"><i class="fa-solid fa-brush"></i> Técnicas &amp; Especialidades</h3>
+              <button type="button" class="btn-add-item" @click="bioForm.techniques.push('')"><i class="fa-solid fa-plus"></i> Adicionar</button>
+            </div>
+            <div class="tags-editor">
+              <div v-for="(tech, idx) in bioForm.techniques" :key="idx" class="tag-edit-row">
+                <input v-model="bioForm.techniques[idx]" type="text" placeholder="Ex: Assemblagem">
+                <button type="button" class="btn-remove-item sm" @click="bioForm.techniques.splice(idx, 1)"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Línguas -->
+          <div class="bio-editor-group">
+            <div class="bio-editor-group-header">
+              <h3 class="bio-editor-title"><i class="fa-solid fa-language"></i> Línguas de Trabalho</h3>
+              <button type="button" class="btn-add-item" @click="bioForm.languages.push('')"><i class="fa-solid fa-plus"></i> Adicionar</button>
+            </div>
+            <div class="tags-editor">
+              <div v-for="(lang, idx) in bioForm.languages" :key="idx" class="tag-edit-row">
+                <input v-model="bioForm.languages[idx]" type="text" placeholder="Ex: Português">
+                <button type="button" class="btn-remove-item sm" @click="bioForm.languages.splice(idx, 1)"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Guardar -->
+          <div class="bio-save-bar">
+            <button @click="saveBiography" class="btn btn-primary" :disabled="isSaving">
+              <i v-if="isSaving" class="fa-solid fa-circle-notch fa-spin"></i>
+              <i v-else class="fa-solid fa-floppy-disk"></i>
+              {{ isSaving ? 'A guardar...' : 'Guardar Biografia' }}
+            </button>
           </div>
         </div>
       </section>
@@ -378,6 +493,45 @@ const messages = ref([]);
 const auctions = ref([]);
 const users = ref([]);
 const stampsAdmin = ref([]);
+
+const bioForm = ref({
+  artistName: '',
+  realName: '',
+  origin: '',
+  bioText: [],
+  majorWorks: [],
+  awards: [],
+  residencies: [],
+  techniques: [],
+  languages: []
+});
+
+const addBioPara = () => bioForm.value.bioText.push('');
+const addWork = () => bioForm.value.majorWorks.push({ year: '', title: '', desc: '' });
+const addAward = () => bioForm.value.awards.push({ year: '', description: '' });
+const addResidency = () => bioForm.value.residencies.push({ year: '', description: '' });
+
+const fetchBiography = async () => {
+  try {
+    const res = await api.get('/biography');
+    bioForm.value = { ...res.data };
+  } catch (err) {
+    console.error('Erro ao carregar biografia:', err);
+  }
+};
+
+const saveBiography = async () => {
+  isSaving.value = true;
+  try {
+    await api.put('/admin/biography', bioForm.value);
+    showToast('Biografia guardada com sucesso!');
+  } catch (err) {
+    showToast('Erro ao guardar biografia.', 'error');
+  } finally {
+    isSaving.value = false;
+  }
+};
+
 const showModal = ref(false);
 const showAuctionModal = ref(false);
 const showAdminModal = ref(false);
@@ -694,7 +848,10 @@ const handleLogout = () => {
   router.push('/admin/login');
 };
 
-onMounted(fetchData);
+onMounted(() => {
+  fetchData();
+  fetchBiography();
+});
 </script>
 
 <style scoped>
@@ -971,5 +1128,137 @@ onMounted(fetchData);
   .sidebar { width: 60px; }
   .content { margin-left: 60px; padding: 20px; }
   .logo-text { font-size: 1.2rem; }
+}
+/* ── Bio Editor ── */
+.bio-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 900px;
+}
+
+.bio-editor-group {
+  background: #1a1a20;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 16px;
+  padding: 28px;
+}
+
+.bio-editor-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.bio-editor-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent-essence);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0;
+}
+
+.bio-editor-group:not(:has(.bio-editor-group-header)) .bio-editor-title {
+  margin-bottom: 20px;
+}
+
+.bio-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.bio-para-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.bio-para-row textarea {
+  flex: 1;
+}
+
+.work-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.work-year-input {
+  width: 100%;
+}
+
+.tags-editor {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.tag-edit-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.tag-edit-row input {
+  flex: 1;
+}
+
+.btn-add-item {
+  background: rgba(14, 165, 233, 0.1);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  color: var(--accent-essence);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-add-item:hover {
+  background: rgba(14, 165, 233, 0.2);
+}
+
+.btn-remove-item {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
+  flex-shrink: 0;
+}
+
+.btn-remove-item.sm {
+  width: 28px;
+  height: 28px;
+  font-size: 0.75rem;
+}
+
+.btn-remove-item:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+
+.bio-save-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
 }
 </style>
