@@ -74,11 +74,12 @@
     <!-- Lightbox Modal -->
     <Teleport to="body">
       <div :class="['lightbox', { 'active': isLightboxActive }]" @click.self="closeLightbox">
-        <div class="lightbox-close-area" @click="closeLightbox">
-          <span class="lightbox-close">&times;</span>
-        </div>
+        <button class="lightbox-close-btn" @click="closeLightbox" aria-label="Fechar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
         
-        <div class="lightbox-content reveal">
+        <div class="lightbox-content">
+          <!-- Coluna Esquerda: Imagem -->
           <div class="lightbox-main">
             <img :src="currentAlbum[currentImageIndex]" alt="Imagem Ampliada">
             
@@ -90,11 +91,20 @@
                 <i class="fa-solid fa-chevron-right"></i>
               </button>
             </div>
+
+            <div class="lb-counter" v-if="currentAlbum.length > 1">
+              {{ currentImageIndex + 1 }} / {{ currentAlbum.length }}
+            </div>
           </div>
-          
+
+          <!-- Coluna Direita: Detalhes com scroll -->
           <div class="lightbox-details">
-            <div class="lb-info-wrap">
+            <div class="lb-details-inner">
+              <span class="lb-category" v-if="currentProject">{{ categoryLabel(currentProject.category) }}</span>
               <h3 class="lb-title">{{ lightboxTitle }}</h3>
+
+              <div class="lb-divider"></div>
+
               <div class="lb-desc" v-if="lightboxDescription">
                 <p 
                   v-for="(para, idx) in getParagraphs(lightboxDescription)" 
@@ -104,9 +114,13 @@
                   {{ para }}
                 </p>
               </div>
-              <div class="lb-views-count" v-if="lightboxViews !== undefined">
-                <i class="fa-solid fa-eye"></i> {{ lightboxViews }} visualizações
+
+              <div class="lb-meta">
+                <div class="lb-views-count" v-if="lightboxViews !== undefined">
+                  <i class="fa-solid fa-eye"></i> {{ lightboxViews }} visualizações
+                </div>
               </div>
+
               <div class="lb-share-area" v-if="currentProject">
                 <span class="share-label">Partilhar:</span>
                 <div class="share-buttons">
@@ -122,7 +136,6 @@
                 </div>
               </div>
             </div>
-            <div class="lb-counter">{{ currentImageIndex + 1 }} / {{ currentAlbum.length }}</div>
           </div>
         </div>
       </div>
@@ -545,70 +558,88 @@ onMounted(() => {
   padding: 100px 0;
 }
 
-/* Lightbox Premium */
+/* Lightbox Premium — Layout Lado a Lado */
 .lightbox {
   position: fixed;
   inset: 0;
-  background: rgba(5, 5, 5, 0.98);
-  backdrop-filter: blur(20px);
+  background: rgba(4, 4, 8, 0.97);
+  backdrop-filter: blur(24px);
   z-index: 3000;
   display: none;
   align-items: center;
   justify-content: center;
-  padding: 40px;
+  padding: 24px;
 }
 
 .lightbox.active {
   display: flex;
 }
 
-.lightbox-content {
-  width: 100%;
-  max-width: 1200px;
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
-.lightbox-main {
-  position: relative;
-  width: 100%;
-  height: 70vh;
+/* Botão fechar flutuante */
+.lightbox-close-btn {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 3100;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+  font-size: 1.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: background 0.25s, transform 0.2s;
+}
+
+.lightbox-close-btn:hover {
+  background: rgba(255, 80, 80, 0.7);
+  transform: scale(1.1);
+}
+
+/* Wrapper principal — dois painéis lado a lado */
+.lightbox-content {
+  width: 100%;
+  max-width: 1300px;
+  height: 88vh;
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(14, 14, 20, 0.95);
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+}
+
+/* Painel Esquerdo — Imagem */
+.lightbox-main {
+  position: relative;
+  flex: 0 0 58%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  overflow: hidden;
 }
 
 .lightbox-main img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  border-radius: 12px;
-  box-shadow: var(--shadow-premium);
-}
-
-.lightbox-close-area {
-  position: absolute;
-  top: 30px;
-  right: 30px;
-  cursor: pointer;
-  z-index: 3010;
-}
-
-.lightbox-close {
-  font-size: 3rem;
-  color: #fff;
-  line-height: 1;
 }
 
 .lb-nav {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 60px;
-  height: 60px;
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
+  width: 48px;
+  height: 48px;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 50%;
   color: #fff;
   display: flex;
@@ -616,6 +647,7 @@ onMounted(() => {
   justify-content: center;
   cursor: pointer;
   transition: var(--transition);
+  z-index: 10;
 }
 
 .lb-nav:hover {
@@ -623,43 +655,93 @@ onMounted(() => {
   border-color: transparent;
 }
 
-.lb-prev { left: -30px; }
-.lb-next { right: -30px; }
+.lb-prev { left: 16px; }
+.lb-next { right: 16px; }
 
-.lightbox-details {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  border-top: 1px solid var(--glass-border);
-  padding-top: 20px;
+.lb-counter {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.6);
+  color: rgba(255,255,255,0.8);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  padding: 5px 14px;
+  border-radius: 50px;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
-.lb-info-wrap {
+/* Painel Direito — Detalhes com scroll */
+.lightbox-details {
+  flex: 0 0 42%;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-width: 80%;
-  text-align: left;
+  border-left: 1px solid rgba(255,255,255,0.07);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+.lightbox-details::-webkit-scrollbar {
+  width: 4px;
+}
+.lightbox-details::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.12);
+  border-radius: 4px;
+}
+
+.lb-details-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 40px 36px;
+}
+
+.lb-category {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  color: var(--accent-essence);
 }
 
 .lb-title {
   font-family: var(--font-serif);
-  font-size: 2rem;
+  font-size: 1.75rem;
+  line-height: 1.3;
   color: #fff;
+  margin: 0;
+}
+
+.lb-divider {
+  height: 1px;
+  background: linear-gradient(to right, rgba(255,138,0,0.4), transparent);
+  margin: 2px 0;
 }
 
 .lb-desc {
-  color: var(--text-secondary);
-  font-size: 1rem;
-  line-height: 1.45;
+  color: rgba(220, 220, 230, 0.88);
+  font-size: 0.97rem;
+  line-height: 1.75;
+  text-align: justify;
 }
 
 .lb-desc-para {
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 
 .lb-desc-para:last-child {
   margin-bottom: 0;
+}
+
+.lb-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-top: 4px;
 }
 
 .lb-views-count {
@@ -667,14 +749,12 @@ onMounted(() => {
   align-items: center;
   gap: 6px;
   color: var(--text-dim);
-  font-size: 0.85rem;
-  margin-top: 4px;
-}
-
-.lb-counter {
-  color: var(--text-dim);
+  font-size: 0.82rem;
   font-weight: 600;
-  letter-spacing: 2px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 5px 12px;
+  border-radius: 50px;
 }
 
 @media (max-width: 900px) {
@@ -723,25 +803,53 @@ onMounted(() => {
     right: 15px;
   }
 
-  .lb-info-wrap {
-    max-width: 70%;
+  /* Lightbox mobile: coluna única (imagem em cima, texto em baixo) */
+  .lightbox {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .lightbox-content {
+    max-width: 100%;
+    height: 95svh;
+    flex-direction: column;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .lightbox-main {
+    flex: 0 0 45%;
+    border-left: none;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .lightbox-details {
+    flex: 1;
+    border-left: none;
+    border-top: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .lb-details-inner {
+    padding: 24px 20px;
+    gap: 12px;
   }
 
   .lb-title {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
   }
 
   .lb-desc {
-    font-size: 0.9rem;
+    font-size: 0.92rem;
+    line-height: 1.65;
   }
   
   .lb-nav {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
   }
-  
-  .lb-prev { left: 10px; }
-  .lb-next { right: 10px; }
+
+  .lb-counter {
+    font-size: 0.72rem;
+  }
 }
 
 /* Estilos de Partilha */
