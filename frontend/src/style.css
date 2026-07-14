@@ -94,6 +94,129 @@ body[data-theme="light"] .about-text {
     color: #3f3f50;
 }
 
+/* ── Biography ── */
+body[data-theme="light"] .biography {
+    background: var(--bg-main);
+}
+
+/* Texto principal dos parágrafos */
+body[data-theme="light"] .bio-para {
+    color: #2c2c3a;
+}
+
+body[data-theme="light"] .bio-para strong {
+    color: #0f0f18;
+}
+
+body[data-theme="light"] .bio-para em {
+    color: var(--accent-essence);
+}
+
+/* Eyebrow / subtítulo label */
+body[data-theme="light"] .eyebrow-text,
+body[data-theme="light"] .bio-section-intro {
+    color: #5f5f70;
+}
+
+/* Cards de factos laterais */
+body[data-theme="light"] .fact-item {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(0, 0, 0, 0.09);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+body[data-theme="light"] .fact-item:hover {
+    background: #fff;
+    border-color: rgba(255, 138, 0, 0.2);
+}
+
+body[data-theme="light"] .fact-label {
+    color: #8888a0;
+}
+
+body[data-theme="light"] .fact-value {
+    color: #2c2c3a;
+}
+
+/* Tabs */
+body[data-theme="light"] .bio-tab {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #5f5f70;
+}
+
+body[data-theme="light"] .bio-tab:hover {
+    color: #0f0f18;
+    border-color: rgba(0, 0, 0, 0.18);
+    background: #fff;
+}
+
+body[data-theme="light"] .bio-tab.active {
+    color: #fff;
+    border-color: transparent;
+}
+
+/* Obras em destaque */
+body[data-theme="light"] .work-item {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+body[data-theme="light"] .work-item:hover {
+    background: #fff;
+    border-color: rgba(255, 138, 0, 0.18);
+}
+
+body[data-theme="light"] .work-title {
+    color: #0f0f18;
+}
+
+body[data-theme="light"] .work-desc {
+    color: #787890;
+}
+
+body[data-theme="light"] .bio-note {
+    color: #3f3f50;
+    border-left-color: var(--accent-essence);
+}
+
+/* Currículo */
+body[data-theme="light"] .cv-section-title {
+    color: var(--accent-essence);
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+body[data-theme="light"] .cv-item p {
+    color: #3f3f50;
+}
+
+body[data-theme="light"] .cv-item p strong {
+    color: #0f0f18;
+}
+
+body[data-theme="light"] .cv-tag {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(0, 0, 0, 0.09);
+    color: #3f3f50;
+}
+
+body[data-theme="light"] .cv-tag:hover {
+    background: #fff;
+    border-color: rgba(255, 138, 0, 0.25);
+    color: #0f0f18;
+}
+
+/* Texto do nome artístico no card da foto */
+body[data-theme="light"] .bio-real-name {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Separador divisório */
+body[data-theme="light"] .lb-divider {
+    background: linear-gradient(to right, rgba(255, 138, 0, 0.3), transparent);
+}
+
+
 /* ── Services ── */
 body[data-theme="light"] .service-card {
     background: rgba(255, 255, 255, 0.85);
