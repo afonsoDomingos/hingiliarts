@@ -227,7 +227,12 @@ const expandedCards = ref({});
 
 const toggleExpand = (id, event) => {
   if (event) event.stopPropagation();
-  expandedCards.value[id] = !expandedCards.value[id];
+  const isExpanding = !expandedCards.value[id];
+  expandedCards.value[id] = isExpanding;
+  // Contabilizar visualização ao expandir (Ler mais), não ao colapsar
+  if (isExpanding) {
+    incrementView(id);
+  }
 };
 
 const getParagraphs = (text) => {
