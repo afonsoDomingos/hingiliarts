@@ -6,6 +6,7 @@ const ProjectSchema = new mongoose.Schema({
     description: { type: String },
     images: [{ type: String }], // Array of Cloudinary URLs
     views: { type: Number, default: 0 },
+    likes: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now }
 });
 

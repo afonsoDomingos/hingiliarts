@@ -139,6 +139,17 @@ app.post('/api/portfolio/:id/view', async (req, res) => {
     }
 });
 
+// Public: Toggle/Increment Project Likes
+app.post('/api/portfolio/:id/like', async (req, res) => {
+    try {
+        const project = await Project.findByIdAndUpdate(req.params.id, { $inc: { likes: 1 } }, { new: true });
+        if (!project) return res.status(404).json({ message: 'Projeto não encontrado' });
+        res.json({ likes: project.likes });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // --- Auction Routes ---
 
 // Public: Get All Auctions (Only active/approved)

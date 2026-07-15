@@ -38,6 +38,10 @@
                   <button class="card-share-btn" @click.stop="copyShareLink(item)" title="Copiar Link">
                     <i class="fa-solid fa-share-nodes"></i>
                   </button>
+                  <button :class="['card-like-btn', { 'liked': isProjectLiked(item) }]" @click.stop="toggleLikeProject(item)" :title="isProjectLiked(item) ? 'Já gostou' : 'Gostar'">
+                    <i class="fa-solid fa-heart"></i>
+                    <span class="like-count" v-if="item.likes !== undefined">{{ item.likes }}</span>
+                  </button>
                   <span class="p-views-badge" v-if="item.views">
                     <i class="fa-solid fa-eye"></i> {{ item.views }}
                   </span>
@@ -114,11 +118,22 @@
                   {{ para }}
                 </p>
               </div>
+<<<<<<< Updated upstream
 
               <div class="lb-meta">
                 <div class="lb-views-count" v-if="lightboxViews !== undefined">
                   <i class="fa-solid fa-eye"></i> {{ lightboxViews }} visualizações
                 </div>
+=======
+              <div class="lb-stats">
+                <div class="lb-views-count" v-if="lightboxViews !== undefined">
+                  <i class="fa-solid fa-eye"></i> {{ lightboxViews }} visualizações
+                </div>
+                <button :class="['lb-like-btn', { 'liked': isProjectLiked(currentProject) }]" @click.stop="toggleLikeProject(currentProject)" v-if="currentProject" :title="isProjectLiked(currentProject) ? 'Remover Gosto' : 'Gostar'">
+                  <i class="fa-solid fa-heart"></i>
+                  <span>{{ currentProject.likes || 0 }} gostos</span>
+                </button>
+>>>>>>> Stashed changes
               </div>
 
               <div class="lb-share-area" v-if="currentProject">
@@ -179,6 +194,48 @@ const triggerToast = (message) => {
   setTimeout(() => {
     showToast.value = false;
   }, 3000);
+};
+
+const likedProjects = ref([]);
+
+const loadLikedProjects = () => {
+  const saved = localStorage.getItem('hingili-liked-projects');
+  if (saved) {
+    try {
+      likedProjects.value = JSON.parse(saved);
+    } catch (e) {
+      likedProjects.value = [];
+    }
+  }
+};
+
+const isProjectLiked = (project) => {
+  if (!project) return false;
+  return likedProjects.value.includes(project._id || project.id);
+};
+
+const toggleLikeProject = async (project) => {
+  if (!project) return;
+  const id = project._id || project.id;
+  
+  if (isProjectLiked(project)) {
+    triggerToast('Já gostou desta obra! ❤️');
+    return;
+  }
+  
+  try {
+    const response = await axios.post(`${API_URL}/api/portfolio/${id}/like`);
+    project.likes = response.data.likes;
+    
+    // Atualizar no localStorage
+    likedProjects.value.push(id);
+    localStorage.setItem('hingili-liked-projects', JSON.stringify(likedProjects.value));
+    
+    triggerToast('Obrigado pelo seu gosto! ❤️');
+  } catch (error) {
+    console.error('Falha ao registar gosto:', error);
+    triggerToast('Erro ao registar gosto. ❌');
+  }
 };
 
 const slugify = (text) => {
@@ -373,6 +430,7 @@ watch(() => route.query.project, (newVal) => {
   }
 });
 onMounted(() => {
+  loadLikedProjects();
   fetchPortfolio();
 });
 </script>
@@ -753,13 +811,68 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--text-dim);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 0.82rem;
   font-weight: 600;
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.08);
   padding: 5px 12px;
   border-radius: 50px;
+}
+
+/* Like buttons styling */
+.card-like-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: var(--transition);
+  padding: 4px;
+}
+
+.card-like-btn:hover,
+.card-like-btn.liked {
+  color: #ff2a6d !important;
+  transform: scale(1.1);
+}
+
+.like-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.lb-stats {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 8px;
+}
+
+.lb-like-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+  padding: 0;
+}
+
+.lb-like-btn i {
+  font-size: 1.1rem;
+}
+
+.lb-like-btn:hover,
+.lb-like-btn.liked {
+  color: #ff2a6d !important;
+  transform: scale(1.05);
 }
 
 @media (max-width: 900px) {
@@ -866,7 +979,7 @@ onMounted(() => {
 }
 
 .share-label {
-  color: var(--text-dim);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 0.85rem;
   font-weight: 600;
 }
